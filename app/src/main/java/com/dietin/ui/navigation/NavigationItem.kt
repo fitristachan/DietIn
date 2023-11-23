@@ -1,4 +1,4 @@
-package com.dicoding.dietin.ui.navigation
+package com.dietin.ui.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

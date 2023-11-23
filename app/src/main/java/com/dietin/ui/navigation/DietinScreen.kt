@@ -1,4 +1,4 @@
-package com.dicoding.dietin.ui.navigation
+package com.dietin.ui.navigation
 
 sealed class DietinScreen (val route: String) {
 

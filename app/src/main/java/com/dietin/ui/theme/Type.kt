@@ -1,4 +1,4 @@
-package com.dicoding.dietin.ui.theme
+package com.dietin.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.dicoding.dietin.R
+import com.dietin.R
 
 // Set of Material typography styles to start with
 val Poppins = FontFamily(

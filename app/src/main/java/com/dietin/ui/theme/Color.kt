@@ -1,4 +1,4 @@
-package com.dicoding.dietin.ui.theme
+package com.dietin.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

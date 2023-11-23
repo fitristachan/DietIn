@@ -1,4 +1,4 @@
-package com.dicoding.dietin.ui.theme
+package com.dietin.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -13,26 +13,32 @@ import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = Green,
+    secondaryContainer = White,
+    onSecondaryContainer = Green,
     secondary = DarkGreen,
     tertiary = HeavyRed,
     surface = LineStroke,
     background = White,
     onSecondary = SubtleGrey,
-    onTertiary = DarkGrey,
+    onTertiary = Grey,
     onBackground = Black,
-    onSurface = Grey,
+    onSurface = Green,
+    onSurfaceVariant = DarkGrey,
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Green,
+    secondaryContainer = White,
+    onSecondaryContainer = Green,
     secondary = DarkGreen,
     tertiary = HeavyRed,
     surface = LineStroke,
     background = White,
     onSecondary = SubtleGrey,
-    onTertiary = DarkGrey,
+    onTertiary = Grey,
     onBackground = Black,
-    onSurface = Grey,
+    onSurface = Green,
+    onSurfaceVariant = DarkGrey,
 )
 
 @Composable

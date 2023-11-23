@@ -1,4 +1,4 @@
-package com.dicoding.dietin
+package com.dietin
 
 import org.junit.Test
 
