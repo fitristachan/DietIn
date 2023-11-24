@@ -84,7 +84,8 @@ fun DietinApp(
 
 @Composable
 private fun BottomBar(
-    navController: NavHostController, modifier: Modifier = Modifier
+    navController: NavHostController,
+    modifier: Modifier = Modifier
 ) {
     Box{
         NavigationBar(

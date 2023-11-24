@@ -25,7 +25,7 @@ val Typography = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 32.sp,
     ),
-    //h3
+    //h3 aka semibold 18
     headlineMedium = TextStyle(
         fontFamily = Poppins,
         fontWeight = FontWeight.SemiBold,
@@ -48,6 +48,12 @@ val Typography = Typography(
         fontFamily = Poppins,
         fontWeight = FontWeight.SemiBold,
         fontSize = 15.sp,
+    ),
+    //regular 12
+    bodySmall = TextStyle(
+        fontFamily = Poppins,
+        fontWeight = FontWeight.Normal,
+        fontSize = 17.sp,
     ),
     //regular 14 or sub2
     bodyMedium = TextStyle(

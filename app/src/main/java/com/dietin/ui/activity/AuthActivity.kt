@@ -4,12 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.dietin.ui.navigation.AuthScreen
+import com.dietin.ui.screen.register.RegisterScreen
 import com.dietin.ui.theme.DietInTheme
 
 class AuthActivity : ComponentActivity() {
@@ -22,7 +29,7 @@ class AuthActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting2("Android")
+                    Auth()
                 }
             }
         }
@@ -30,17 +37,30 @@ class AuthActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting2(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+fun Auth(
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
+    ) {
+    NavHost(
+        navController = navController,
+        startDestination = AuthScreen.Register.route,
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxSize()
+    ) {
+        composable(AuthScreen.Register.route) {
+            RegisterScreen(navController = navController)
+        }
+        composable(AuthScreen.Login.route) {
+            RegisterScreen(navController = navController)
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview2() {
     DietInTheme {
-        Greeting2("Android")
+        Auth()
     }
 }

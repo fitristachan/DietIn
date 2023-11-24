@@ -6,4 +6,21 @@
     <string name="title_activity_on_boarding">OnBoarding</string>
     <string name="title_activity_auth">AuthActivity</string>
     <string name="menu_scan">Scan Kadar Lektin</string>
+    <string name="skip_button">Skip</string>
+    <string name="first_onboarding_title">Selamat Datang di DietIn</string>
+    <string name="first_onboarding_detail">Temukan kandungan lektin tersembunyi dalam makanan Anda dan buka jalan menuju gaya hidup lebih sehat.</string>
+    <string name="second_onboarding_detail">Tersedia pemindaian makanan untuk mempelajari kandungan lektin dan membuat pilihan diet yang bijak.</string>
+    <string name="second_onboarding_title">Jelajahi Kadar Lektin</string>
+    <string name="second_onboarding_button">Lanjutkan</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Konfirmasi Password</string>
+    <string name="or_inline">atau</string>
+    <string name="register">Daftar</string>
+    <string name="register_title">Buat Akun Baru</string>
+    <string name="register_detail">Buat akun untuk memulai perjalananmu.</string>
+    <string name="register_with_google">Daftar dengan Google</string>
+    <string name="login_ask">Sudah punya akun?</string>
+    <string name="login">Masuk</string>
 </resources>

@@ -65,11 +65,17 @@ dependencies {
     //navigation
     implementation("androidx.navigation:navigation-compose:2.6.0")
 
+    //horizontalpager
+    implementation("androidx.compose.foundation:foundation:1.4.3")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.30.1")
+
     implementation(platform("androidx.compose:compose-bom:2023.05.01"))
     implementation(platform("androidx.compose:compose-bom:2023.05.01"))
     implementation(platform("androidx.compose:compose-bom:2023.05.01"))
     implementation(platform("androidx.compose:compose-bom:2023.05.01"))
     implementation(platform("androidx.compose:compose-bom:2023.05.01"))
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
