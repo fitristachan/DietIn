@@ -39,7 +39,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dietin.R
 import com.dietin.ui.screen.onboarding.FirstScreen
-import com.dietin.ui.screen.onboarding.OnboardingManager
+import com.dietin.data.preferences.OnboardingManager
 import com.dietin.ui.screen.onboarding.SecondScreen
 import com.dietin.ui.theme.DietInTheme
 import com.google.accompanist.pager.HorizontalPagerIndicator
