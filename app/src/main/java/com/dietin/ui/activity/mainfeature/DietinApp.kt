@@ -168,7 +168,7 @@ private fun BottomBar(
                 .background(MaterialTheme.colorScheme.secondary)
                 .align(Alignment.BottomCenter)
         ) {
-            val imageVector: Painter = painterResource(id = R.drawable.scan)
+            val imageVector: Painter = painterResource(id = R.drawable.ic_scan)
 
             Image(
                 painter = imageVector, contentDescription = stringResource(R.string.menu_scan)

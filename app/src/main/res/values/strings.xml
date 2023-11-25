@@ -19,15 +19,14 @@
     <string name="or_inline">atau</string>
     <string name="register">Daftar</string>
     <string name="register_title">Buat Akun Baru</string>
-    <string name="register_detail">Buat akun untuk memulai perjalananmu.</string>
+    <string name="register_detail">Buat akun untuk memulai perjalananmu</string>
     <string name="register_with_google">Daftar dengan Google</string>
     <string name="login_ask">Sudah punya akun?</string>
     <string name="login">Masuk</string>
     <string name="register_ask">Belum punya akun?</string>
     <string name="login_with_google">Masuk dengan Google</string>
     <string name="login_title">Selamat Datang Kembali</string>
-    <string name="login_detail">Masuk ke akunmu untuk melanjutkan.</string>
-    <string name="lihat_password">Lihat password</string>
+    <string name="login_detail">Masuk ke akunmu untuk melanjutkan</string>
     <string name="hide_password">Sembunyikan password</string>
     <string name="show_password">Lihat password</string>
     <string name="empty_username_warning">Username harus diisi</string>
