@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -25,9 +24,8 @@ fun SecondScreen(
             .padding(16.dp),
     ){
 
-        val imageVector: Painter = painterResource(id = R.drawable.onboarding_second)
         Image(
-            painter = imageVector,
+            painter = painterResource(id = R.drawable.onboarding_second),
             contentDescription = stringResource(R.string.second_onboarding_title),
             modifier = Modifier
                 .fillMaxWidth()

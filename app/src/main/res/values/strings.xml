@@ -23,4 +23,17 @@
     <string name="register_with_google">Daftar dengan Google</string>
     <string name="login_ask">Sudah punya akun?</string>
     <string name="login">Masuk</string>
+    <string name="register_ask">Belum punya akun?</string>
+    <string name="login_with_google">Masuk dengan Google</string>
+    <string name="login_title">Selamat Datang Kembali</string>
+    <string name="login_detail">Masuk ke akunmu untuk melanjutkan.</string>
+    <string name="lihat_password">Lihat password</string>
+    <string name="hide_password">Sembunyikan password</string>
+    <string name="show_password">Lihat password</string>
+    <string name="empty_username_warning">Username harus diisi</string>
+    <string name="empty_email_warning">Email harus diisi</string>
+    <string name="wrong_email_warning">Bukan format email</string>
+    <string name="empty_password_warning">Password harus diisi</string>
+    <string name="confirm_password_empty_warning">Konfirmasi Password harus diisi</string>
+    <string name="password_not_match_warning">Password tidak sesuai</string>
 </resources>

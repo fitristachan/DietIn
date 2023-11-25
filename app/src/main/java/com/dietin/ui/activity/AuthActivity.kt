@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dietin.ui.navigation.AuthScreen
+import com.dietin.ui.screen.login.LoginScreen
 import com.dietin.ui.screen.register.RegisterScreen
 import com.dietin.ui.theme.DietInTheme
 
@@ -49,10 +50,12 @@ fun Auth(
             .fillMaxSize()
     ) {
         composable(AuthScreen.Register.route) {
-            RegisterScreen(navController = navController)
+            RegisterScreen(
+                navigateToLogin = { navController.navigate(AuthScreen.Login.route) })
         }
         composable(AuthScreen.Login.route) {
-            RegisterScreen(navController = navController)
+            LoginScreen(
+                navigateToRegister = { navController.navigate(AuthScreen.Register.route) })
         }
     }
 }
