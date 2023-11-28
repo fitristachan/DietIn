@@ -2,8 +2,11 @@ package com.dietin.ui.screen.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,10 +32,11 @@ fun SecondScreen(
             contentDescription = stringResource(R.string.second_onboarding_title),
             modifier = Modifier
                 .fillMaxWidth()
+                .wrapContentHeight()
                 .align(Alignment.CenterHorizontally)
-                .padding(bottom = 16.dp)
-
         )
+
+        Spacer(modifier = Modifier.heightIn(min = 16.dp))
 
         Text(
             text = stringResource(R.string.second_onboarding_title),
@@ -43,6 +47,8 @@ fun SecondScreen(
                 .padding(bottom = 8.dp)
                 .align(Alignment.CenterHorizontally)
         )
+
+        Spacer(modifier = Modifier.heightIn(min = 8.dp))
 
         Text(
             text = stringResource(R.string.second_onboarding_detail),

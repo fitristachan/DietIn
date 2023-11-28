@@ -1,5 +1,9 @@
 package com.dietin.ui.activity
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,12 +13,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.dietin.ui.activity.mainfeature.MainActivity
 import com.dietin.ui.navigation.AuthScreen
 import com.dietin.ui.screen.login.LoginScreen
 import com.dietin.ui.screen.register.RegisterScreen
@@ -42,6 +48,8 @@ fun Auth(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     ) {
+    val context = LocalContext.current
+
     NavHost(
         navController = navController,
         startDestination = AuthScreen.Register.route,
@@ -55,9 +63,25 @@ fun Auth(
         }
         composable(AuthScreen.Login.route) {
             LoginScreen(
-                navigateToRegister = { navController.navigate(AuthScreen.Register.route) })
+                navigateToRegister = { navController.navigate(AuthScreen.Register.route) },
+                navigateToHome = {
+                    //isloginpreferences
+                    context.findActivity()?.finish()
+                    context.startActivity(
+                        Intent(
+                            context,
+                            MainActivity::class.java
+                        )
+                    )
+                })
         }
     }
+}
+
+private fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
 
 @Preview(showBackground = true)

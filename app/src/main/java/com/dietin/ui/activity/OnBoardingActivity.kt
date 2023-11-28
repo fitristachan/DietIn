@@ -55,6 +55,8 @@ class OnBoardingActivity : ComponentActivity() {
             val intent = Intent(this, AuthActivity::class.java)
             startActivity(intent)
             finish()
+
+            //pengondisian islogin
         } else {
             setContent {
                 DietInTheme {

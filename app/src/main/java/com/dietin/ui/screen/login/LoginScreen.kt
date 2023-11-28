@@ -9,10 +9,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -52,6 +53,7 @@ import com.dietin.R
 fun LoginScreen(
     modifier: Modifier = Modifier,
     navigateToRegister: () -> Unit,
+    navigateToHome: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -106,10 +108,12 @@ fun LoginScreen(
             contentDescription = stringResource(R.string.app_name),
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(bottom = 16.dp)
-                .width(52.dp)
-                .height(48.dp)
+                .widthIn(min = 52.dp)
+                .heightIn(min = 48.dp)
         )
+
+        Spacer(modifier = Modifier.heightIn(min = 16.dp))
+
         Text(
             text = stringResource(R.string.login_title),
             style = MaterialTheme.typography.headlineMedium,
@@ -122,7 +126,7 @@ fun LoginScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.heightIn(min = 32.dp))
 
         OutlinedTextField(
             value = email,
@@ -162,10 +166,10 @@ fun LoginScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.background,
                 errorContainerColor = MaterialTheme.colorScheme.background
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().wrapContentHeight()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.heightIn(min = 16.dp))
 
         OutlinedTextField(
             value = password,
@@ -214,21 +218,20 @@ fun LoginScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.background,
                 errorContainerColor = MaterialTheme.colorScheme.background
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().wrapContentHeight()
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.heightIn(min = 32.dp))
 
         Column {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navigateToHome() },
                 enabled = !isEmailError && !isPasswordError
                           && email.isNotEmpty() && password.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp)
+                    .fillMaxWidth().wrapContentHeight()
             ) {
                 Text(
                     text = stringResource(R.string.login),
@@ -237,6 +240,8 @@ fun LoginScreen(
                 )
             }
 
+            Spacer(modifier = Modifier.heightIn(min = 16.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -244,7 +249,7 @@ fun LoginScreen(
                 Divider(
                     modifier = Modifier
                         .weight(1f)
-                        .height(2.dp)
+                        .heightIn(min = 2.dp)
                         .padding(horizontal = 4.dp)
                         .background(MaterialTheme.colorScheme.primary)
                 )
@@ -257,44 +262,46 @@ fun LoginScreen(
                 Divider(
                     modifier = Modifier
                         .weight(1f)
-                        .height(2.dp)
+                        .heightIn(min = 2.dp)
                         .padding(horizontal = 4.dp)
                         .background(MaterialTheme.colorScheme.primary)
                 )
             }
 
+            Spacer(modifier = Modifier.heightIn(min = 16.dp))
+
             Button(
-                onClick = { navigateToRegister() },
+                onClick = { navigateToHome() },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background),
                 shape = RoundedCornerShape(8.dp),
                 border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp)
+                    .heightIn(min = 48.dp)
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_google),
                     contentDescription = stringResource(R.string.login_with_google),
                     modifier = Modifier
-                        .size(24.dp)
+                        .heightIn(max = 22.dp)
                         .align(Alignment.CenterVertically)
                 )
 
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.sizeIn(12.dp))
 
                 Text(
                     text = stringResource(R.string.login_with_google),
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onBackground,
                 )
             }
 
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.heightIn(16.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().wrapContentHeight()
             ) {
                 Text(
                     text = stringResource(R.string.register_ask),
