@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,11 +74,14 @@ fun ScanCard(
                     Box(
                         modifier = Modifier
                             .sizeIn(minWidth = 110.dp, minHeight = 35.dp)
-                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(20.dp)),
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(20.dp)
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Rendah Lektin",
+                            text = stringResource(R.string.low_lectine),
                             style = MaterialTheme.typography.labelSmall,
                             maxLines = 2,
                             textAlign = TextAlign.Center,

@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.dietin.R
@@ -81,14 +82,14 @@ fun HomeScreen(
 
         ){
             Text(
-                text = "Riwayat Terkini",
+                text = stringResource(R.string.history),
                 style = MaterialTheme.typography.headlineSmall)
 
             TextButton(
                 onClick = { /*TODO*/ },
             ) {
                 Text(
-                    text = "Lihat lebih banyak",
+                    text = stringResource(R.string.see_more),
                     style = MaterialTheme.typography.titleSmall,
                     fontStyle = FontStyle.Italic,
                     color = MaterialTheme.colorScheme.primary)
@@ -117,7 +118,7 @@ fun HomeScreen(
                 .padding(horizontal = 4.dp)
         ){
             Text(
-                text = "Seputar Lektin",
+                text = stringResource(R.string.lectine_article),
                 style = MaterialTheme.typography.headlineSmall)
 
             Spacer(modifier = Modifier.heightIn(min = 8.dp))

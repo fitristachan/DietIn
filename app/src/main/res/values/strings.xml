@@ -35,4 +35,13 @@
     <string name="empty_password_warning">Password harus diisi</string>
     <string name="confirm_password_empty_warning">Konfirmasi Password harus diisi</string>
     <string name="password_not_match_warning">Password tidak sesuai</string>
+    <string name="contact_information">Informasi Kontak</string>
+    <string name="history">Riwayat Terkini</string>
+    <string name="see_more">Lihat lebih banyak</string>
+    <string name="lectine_article">Seputar Lektin</string>
+    <string name="low_lectine">Rendah Lektin</string>
+    <string name="personal">Personal</string>
+    <string name="diet_recommendation">Rekomendasi Diet</string>
+    <string name="about_us">Tentang Kami</string>
+    <string name="log_out">Keluar</string>
 </resources>
