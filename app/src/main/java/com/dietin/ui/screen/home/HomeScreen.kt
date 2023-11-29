@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import com.dietin.R
+import com.dietin.ui.component.ArticleCard
 import com.dietin.ui.component.ScanCard
 
 @Composable
@@ -110,14 +112,29 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.heightIn(min = 24.dp))
 
-        Text(
-            text = "Seputar Lektin",
-            style = MaterialTheme.typography.headlineSmall,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp),)
+                .padding(horizontal = 4.dp)
+        ){
+            Text(
+                text = "Seputar Lektin",
+                style = MaterialTheme.typography.headlineSmall)
 
-        Spacer(modifier = Modifier.heightIn(min = 8.dp))
+            Spacer(modifier = Modifier.heightIn(min = 8.dp))
+
+            LazyColumn(
+                userScrollEnabled = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ){
+                items(count = 10) {index ->
+                    ArticleCard(
+                        modifier = Modifier,
+                        articleTitle = index.toString()
+                    )
+                }
+            }
+        }
 
     }
 
