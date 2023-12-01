@@ -44,4 +44,8 @@
     <string name="diet_recommendation">Rekomendasi Diet</string>
     <string name="about_us">Tentang Kami</string>
     <string name="log_out">Keluar</string>
+    <string name="camera_permission">Untuk menggunakan fitur ini, Anda perlu memberikan izin akses kamera.</string>
+    <string name="permission_request">Izin Akses</string>
+    <string name="camera_access_rejected">Anda tidak memberi izin untuk mengakses kamera</string>
+    <string name="open_settings">Buka Pengaturan</string>
 </resources>

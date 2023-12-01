@@ -61,6 +61,17 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
+    //permission
+    implementation("com.google.accompanist:accompanist-permissions:0.18.0")
+
+    //camera
+    implementation("androidx.camera:camera-camera2:1.2.1")
+    implementation("androidx.camera:camera-lifecycle:1.2.1")
+    implementation("androidx.camera:camera-view:1.2.1")
+
+    //coilImage
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
     //navigation
@@ -77,7 +88,9 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.05.01"))
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("org.tensorflow:tensorflow-lite-support:0.1.0")
+
+    //tflite
+    implementation("org.tensorflow:tensorflow-lite-support:0.3.1")
     implementation("org.tensorflow:tensorflow-lite-metadata:0.1.0")
 
     testImplementation("junit:junit:4.13.2")
