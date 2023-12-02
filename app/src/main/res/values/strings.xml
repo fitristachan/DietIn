@@ -48,4 +48,9 @@
     <string name="permission_request">Izin Akses</string>
     <string name="camera_access_rejected">Anda tidak memberi izin untuk mengakses kamera</string>
     <string name="open_settings">Buka Pengaturan</string>
+    <string name="welcome_back">Selamat Datang</string>
+    <string name="logout_confirmation_message">Apakah Anda yakin ingin keluar?</string>
+    <string name="logout_confirmation_title">Konfirmasi Keluar</string>
+    <string name="logout_confirm">Iya</string>
+    <string name="logout_cancel">Tidak</string>
 </resources>

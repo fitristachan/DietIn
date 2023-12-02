@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "339292236196",
+    "project_id": "dietin-capstone",
+    "storage_bucket": "dietin-capstone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339292236196:android:ea72d491f4ab67c6db3931",
+        "android_client_info": {
+          "package_name": "com.dietinapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339292236196-5031it1bfai8ei2al20jkdd4sde7rmaa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dietinapp",
+            "certificate_hash": "e8168488bdb9168c8028269fcbee97d5d39bb2d2"
+          }
+        },
+        {
+          "client_id": "339292236196-ou9d33hho5vi4rocmufdjscmn4kdqiqo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMFnZOU891rYj0pl9jB_XvislabrvW7wA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339292236196-ou9d33hho5vi4rocmufdjscmn4kdqiqo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
