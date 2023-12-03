@@ -33,6 +33,7 @@ import coil.compose.AsyncImage
 import com.dietinapp.R
 import com.dietinapp.ui.component.ArticleCard
 import com.dietinapp.ui.component.ScanCard
+import com.dietinapp.utils.capitalizeFirstLetter
 
 @Composable
 fun HomeScreen(
@@ -58,7 +59,7 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.heightIn(min = 8.dp))
 
                 Text(
-                    text = "Hai, $username!",
+                    text = "Hai, ${username.capitalizeFirstLetter()}!",
                     style = MaterialTheme.typography.headlineMedium)
                 
                 Text(
@@ -67,7 +68,7 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
-            if (photo.isNullOrEmpty()){
+            if (photo.isEmpty() || photo == "" || photo == "null"){
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier

@@ -3,6 +3,7 @@ package com.dietinapp.ui.screen.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,7 @@ import coil.compose.AsyncImage
 import com.dietinapp.R
 import com.dietinapp.ui.component.ProfileItemPainter
 import com.dietinapp.ui.component.ProfileItemVector
+import com.dietinapp.utils.capitalizeFirstLetter
 
 @Composable
 fun ProfileScreen(
@@ -59,13 +61,19 @@ fun ProfileScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            if (photo.isNullOrEmpty()) {
+            if (photo.isEmpty() || photo == "" || photo == "null"){
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .clip(shape = CircleShape)
                         .border(5.dp, MaterialTheme.colorScheme.secondary, CircleShape)
                         .wrapContentSize()
+                        .clickable(
+                            enabled = true,
+                            onClick = {
+
+                            }
+                        ),
                 ) {
                     Image(
                         painter = painterResource(R.drawable.ic_avatar),
@@ -94,7 +102,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.heightIn(min = 8.dp))
 
                 Text(
-                    text = username,
+                    text = username.capitalizeFirstLetter(),
                     style = MaterialTheme.typography.headlineSmall
                 )
 
@@ -106,7 +114,7 @@ fun ProfileScreen(
             }
         }
 
-        Spacer(modifier = Modifier.heightIn(min = 28.dp))
+        Spacer(modifier = Modifier.heightIn(min = 24.dp))
 
 
         Column(
@@ -125,7 +133,8 @@ fun ProfileScreen(
                     ProfileItemVector(
                         modifier = Modifier.padding(vertical = 8.dp),
                         itemTitle = stringResource(id = R.string.username),
-                        itemIcon = Icons.Filled.Person
+                        itemIcon = Icons.Filled.Person,
+                        onClick = {  }
                     )
                 }
 
@@ -133,7 +142,8 @@ fun ProfileScreen(
                     ProfileItemVector(
                         modifier = Modifier.padding(vertical = 8.dp),
                         itemTitle = stringResource(id = R.string.email),
-                        itemIcon = Icons.Filled.Email
+                        itemIcon = Icons.Filled.Email,
+                        onClick = {  }
                     )
                 }
 
@@ -141,14 +151,15 @@ fun ProfileScreen(
                     ProfileItemVector(
                         modifier = Modifier.padding(vertical = 8.dp),
                         itemTitle = stringResource(id = R.string.password),
-                        itemIcon = Icons.Filled.Lock
+                        itemIcon = Icons.Filled.Lock,
+                        onClick = {  }
                     )
                 }
             }
 
             Spacer(modifier = Modifier.heightIn(min = 14.dp))
             Divider(modifier = Modifier.heightIn(min = 1.dp))
-            Spacer(modifier = Modifier.heightIn(min = 16.dp))
+            Spacer(modifier = Modifier.heightIn(min = 14.dp))
 
             Text(
                 text = stringResource(R.string.personal),
@@ -160,23 +171,31 @@ fun ProfileScreen(
                 modifier = Modifier.padding(horizontal = 4.dp)
             ) {
                 item {
-                    ProfileItemVector(
-                        modifier = Modifier.padding(vertical = 8.dp),
+                    ProfileItemPainter(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp),
                         itemTitle = stringResource(id = R.string.history),
-                        itemIcon = Icons.Filled.Person
+                        itemIcon = R.drawable.ic_history,
+                        itemTint = MaterialTheme.colorScheme.primary,
+                        textColor = MaterialTheme.colorScheme.onBackground,
+                        onClick = {  }
                     )
                 }
 
                 item {
-                    ProfileItemVector(
-                        modifier = Modifier.padding(vertical = 8.dp),
+                    ProfileItemPainter(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp),
                         itemTitle = stringResource(R.string.diet_recommendation),
-                        itemIcon = Icons.Filled.Email
+                        itemIcon = R.drawable.ic_diet,
+                        itemTint = MaterialTheme.colorScheme.primary,
+                        textColor = MaterialTheme.colorScheme.onBackground,
+                        onClick = {  }
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.heightIn(min = 16.dp))
+            Spacer(modifier = Modifier.heightIn(min = 14.dp))
             Divider(modifier = Modifier.heightIn(min = 1.dp))
             Spacer(modifier = Modifier.heightIn(min = 12.dp))
 
@@ -186,11 +205,14 @@ fun ProfileScreen(
                 modifier = Modifier.padding(horizontal = 4.dp)
             ) {
                 item {
-                    ProfileItemVector(
+                    ProfileItemPainter(
                         modifier = Modifier
                             .padding(vertical = 8.dp),
                         itemTitle = stringResource(R.string.about_us),
-                        itemIcon = Icons.Filled.Person
+                        itemIcon = R.drawable.ic_group,
+                        itemTint = MaterialTheme.colorScheme.primary,
+                        textColor = MaterialTheme.colorScheme.onBackground,
+                        onClick = {  }
                     )
                 }
 

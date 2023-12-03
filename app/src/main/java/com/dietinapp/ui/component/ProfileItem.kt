@@ -38,7 +38,7 @@ fun ProfileItemPainter(
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
         modifier = Modifier
-            .padding(vertical = 8.dp)
+            .padding(vertical = 16.dp)
             .fillMaxWidth()
             .clickable(
                 enabled = true,
@@ -94,13 +94,20 @@ fun ProfileItemPainter(
 fun ProfileItemVector(
     modifier: Modifier = Modifier,
     itemTitle: String,
-    itemIcon: ImageVector
+    itemIcon: ImageVector,
+    onClick: () -> Unit
 ) {
     Card(
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
         modifier = Modifier
             .padding(vertical = 16.dp)
             .fillMaxWidth()
+            .clickable(
+                enabled = true,
+                onClick = {
+                    onClick()
+                }
+            ),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically

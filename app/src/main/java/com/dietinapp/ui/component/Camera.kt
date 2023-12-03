@@ -1,4 +1,4 @@
-package com.dietinapp.utils
+package com.dietinapp.ui.component
 
 import android.content.Context
 import android.view.ViewGroup

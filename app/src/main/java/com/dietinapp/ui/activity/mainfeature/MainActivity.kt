@@ -39,14 +39,17 @@ import com.dietinapp.ui.screen.home.HomeScreen
 import com.dietinapp.ui.screen.profile.ProfileScreen
 import com.dietinapp.ui.screen.scan.ScanScreen
 import com.dietinapp.ui.theme.DietInTheme
-import com.dietinapp.utils.BottomBar
-import com.dietinapp.utils.LoadingScreen
+import com.dietinapp.ui.component.BottomBar
+import com.dietinapp.ui.component.LoadingScreen
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = Firebase.auth
 
         val pref = UserPreference.getInstance(application.dataStore)
         val userPreferenceViewModel =
@@ -62,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DietinApp(userPreferenceViewModel = userPreferenceViewModel)
+                    DietinApp(auth = auth, userPreferenceViewModel = userPreferenceViewModel)
                 }
             }
         }
@@ -71,6 +74,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun DietinApp(
+    auth: FirebaseAuth,
     modifier: Modifier = Modifier,
     userPreferenceViewModel: UserPreferenceViewModel,
     navController: NavHostController = rememberNavController(),
@@ -126,15 +130,19 @@ fun DietinApp(
                     photo = photo,
                     logOut = {
                         isLoading = true
-                        Firebase.auth.signOut()
-                        userPreferenceViewModel.deleteAll()
-                        context.findActivity()?.finish()
-                        context.startActivity(
-                            Intent(
-                                context,
-                                AuthActivity::class.java
+                        auth.signOut()
+                        if (auth.currentUser == null) {
+                            userPreferenceViewModel.deleteAll()
+                            context.findActivity()?.finish()
+                            context.startActivity(
+                                Intent(
+                                    context,
+                                    AuthActivity::class.java
+                                )
                             )
-                        )
+                        } else {
+                            auth.signOut()
+                        }
                     }
                 )
                 if (isLoading) {

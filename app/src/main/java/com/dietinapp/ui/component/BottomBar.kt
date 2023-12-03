@@ -1,4 +1,4 @@
-package com.dietinapp.utils
+package com.dietinapp.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

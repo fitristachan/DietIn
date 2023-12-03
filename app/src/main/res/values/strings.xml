@@ -53,4 +53,11 @@
     <string name="logout_confirmation_title">Konfirmasi Keluar</string>
     <string name="logout_confirm">Iya</string>
     <string name="logout_cancel">Tidak</string>
+    <string name="anda_sudah_login">Anda sudah login</string>
+    <string name="register_google_title">Lengkapi Data Anda</string>
+    <string name="register_google_desc">Perjalanan Anda hampir dimulai</string>
+    <string name="username_length_warning">Maksimal panjang username 10 karakter</string>
+    <string name="username_contain_space">Tidak boleh terdapat spasi atau enter</string>
+    <string name="password_length_warning">Password kurang dari 6 karakter</string>
+    <string name="password_patern_warning">Harus mengandung huruf kapital, angka, simbol dan tidak mengandung spasi</string>
 </resources>

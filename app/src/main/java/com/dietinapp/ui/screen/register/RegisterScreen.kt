@@ -47,18 +47,29 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.dietinapp.R
+import com.dietinapp.firebase.registerCustom
+import com.dietinapp.ui.component.LoadingScreen
+import com.dietinapp.utils.errorDialog
+import com.google.firebase.auth.FirebaseAuth
+import java.util.regex.Pattern
 
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
+    auth: FirebaseAuth,
     navigateToLogin: () -> Unit,
     registerGoogle: () -> Unit,
-    registerCustom: () -> Unit,
+    onAuthComplete: () -> Unit,
 ) {
     val context = LocalContext.current
 
     val state = rememberScrollState(0)
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    var authError by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -85,6 +96,12 @@ fun RegisterScreen(
         if (username.isEmpty()) {
             isUsernameError = true
             usernameErrorMessage = context.getString(R.string.empty_username_warning)
+        } else if (username.length > 15){
+            isUsernameError = true
+            usernameErrorMessage = context.getString(R.string.username_length_warning)
+        } else if (username.contains(" ")){
+            isUsernameError = true
+            usernameErrorMessage = context.getString(R.string.username_contain_space)
         } else {
             isUsernameError = false
         }
@@ -103,13 +120,24 @@ fun RegisterScreen(
     }
 
     fun validatePassword(password: String) {
+        val pattern: Pattern = Pattern.compile(
+            "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{6,}\$"
+        )
+
         if (password.isEmpty()) {
             isPasswordError = true
             passwordErrorMessage = context.getString(R.string.empty_password_warning)
+        } else if (password.length < 6 ) {
+            isPasswordError = true
+            passwordErrorMessage = context.getString(R.string.password_length_warning)
+        } else if (!pattern.matcher(password).matches()) {
+            isPasswordError = true
+            passwordErrorMessage = context.getString(R.string.password_patern_warning)
         } else {
             isPasswordError = false
         }
     }
+
 
     fun validateConfirmPassword(password: String, confirmPassword: String) {
 
@@ -191,6 +219,7 @@ fun RegisterScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.background,
                 errorContainerColor = MaterialTheme.colorScheme.background,
             ),
+            textStyle = MaterialTheme.typography.titleMedium,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -234,6 +263,7 @@ fun RegisterScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.background,
                 errorContainerColor = MaterialTheme.colorScheme.background,
             ),
+            textStyle = MaterialTheme.typography.titleMedium,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -286,6 +316,7 @@ fun RegisterScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.background,
                 errorContainerColor = MaterialTheme.colorScheme.background,
             ),
+            textStyle = MaterialTheme.typography.titleMedium,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -338,6 +369,7 @@ fun RegisterScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.background,
                 errorContainerColor = MaterialTheme.colorScheme.background,
             ),
+            textStyle = MaterialTheme.typography.titleMedium,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -347,7 +379,20 @@ fun RegisterScreen(
         Column {
             Button(
                 onClick = {
-                    registerCustom()
+                    isLoading = true
+                    registerCustom(
+                        auth = auth,
+                        email = email,
+                        password = password,
+                        username = username,
+                        onAuthComplete = {
+                            onAuthComplete()
+                        },
+                        onAuthError = { errorMsg ->
+                            authError = errorMsg.toString()
+                            showDialog = true
+                        },
+                    )
                 },
                 enabled = !isUsernameError && !isEmailError && !isPasswordError && !isConfirmPasswordError
                         && username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty(),
@@ -394,7 +439,8 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.heightIn(min = 16.dp))
 
             Button(
-                onClick = { registerGoogle() },
+                onClick = {
+                    registerGoogle() },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background),
                 shape = RoundedCornerShape(8.dp),
                 border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.primary),
@@ -442,5 +488,19 @@ fun RegisterScreen(
                 )
             }
         }
+    }
+    if (isLoading) {
+        LoadingScreen()
+    }
+    if (authError.isNotEmpty()) {
+        errorDialog(
+            showDialog = showDialog,
+            errorMsg = authError,
+            onDismiss =
+            {
+                isLoading = false
+                showDialog = false
+            }
+        )
     }
 }

@@ -44,12 +44,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dietinapp.R
 import com.dietinapp.ml.NasnetMobile
-import com.dietinapp.utils.CameraPreview
-import com.dietinapp.utils.LoadingScreen
+import com.dietinapp.ui.component.CameraPreview
+import com.dietinapp.ui.component.LoadingScreen
 import com.dietinapp.utils.Permission
 import com.dietinapp.utils.createCustomTempFile
-import com.dietinapp.utils.executor
-import com.dietinapp.utils.getCameraProvider
+import com.dietinapp.ui.component.executor
+import com.dietinapp.ui.component.getCameraProvider
 import com.dietinapp.utils.uriToBitmap
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
