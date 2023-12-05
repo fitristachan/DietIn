@@ -1,14 +1,17 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.dietin"
+    namespace = "com.dietinapp"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "com.dietin"
+        applicationId = "com.dietinapp"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
@@ -61,6 +64,20 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
+    //livedata
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+
+    //permission
+    implementation("com.google.accompanist:accompanist-permissions:0.18.0")
+
+    //camera
+    implementation("androidx.camera:camera-camera2:1.2.1")
+    implementation("androidx.camera:camera-lifecycle:1.2.1")
+    implementation("androidx.camera:camera-view:1.2.1")
+
+    //coilImage
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
 
     //navigation
@@ -77,8 +94,25 @@ dependencies {
     implementation(platform("androidx.compose:compose-bom:2023.05.01"))
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-    implementation("org.tensorflow:tensorflow-lite-support:0.1.0")
+
+    //tflite
+    implementation("org.tensorflow:tensorflow-lite-support:0.3.1")
     implementation("org.tensorflow:tensorflow-lite-metadata:0.1.0")
+
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
+
+
+    // TODO: Add the dependencies for Firebase products you want to use
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.6.0")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
+
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
