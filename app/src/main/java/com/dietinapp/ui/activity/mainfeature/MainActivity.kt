@@ -1,12 +1,9 @@
 package com.dietinapp.ui.activity.mainfeature
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +29,8 @@ import com.dietinapp.data.datastore.UserPreference
 import com.dietinapp.data.datastore.UserPreferenceViewModel
 import com.dietinapp.data.datastore.UserPreferenceViewModelFactory
 import com.dietinapp.data.datastore.dataStore
-import com.dietinapp.ui.activity.AuthActivity
+import com.dietinapp.firebase.AuthViewModel
+import com.dietinapp.firebase.AuthViewModelFactory
 import com.dietinapp.ui.navigation.DietinScreen
 import com.dietinapp.ui.screen.detail.DetailScreen
 import com.dietinapp.ui.screen.home.HomeScreen
@@ -40,13 +38,16 @@ import com.dietinapp.ui.screen.profile.ProfileScreen
 import com.dietinapp.ui.screen.scan.ScanScreen
 import com.dietinapp.ui.theme.DietInTheme
 import com.dietinapp.ui.component.BottomBar
-import com.dietinapp.ui.component.LoadingScreen
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
+    private val authViewModel by viewModels<AuthViewModel> {
+        AuthViewModelFactory.getInstance(application)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
@@ -65,7 +66,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DietinApp(auth = auth, userPreferenceViewModel = userPreferenceViewModel)
+                    DietinApp(
+                        authViewModel = authViewModel,
+                        userPreferenceViewModel = userPreferenceViewModel)
                 }
             }
         }
@@ -74,9 +77,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun DietinApp(
-    auth: FirebaseAuth,
     modifier: Modifier = Modifier,
     userPreferenceViewModel: UserPreferenceViewModel,
+    authViewModel: AuthViewModel,
     navController: NavHostController = rememberNavController(),
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -100,8 +103,6 @@ fun DietinApp(
         photo = it.toString()
     }
 
-    var isLoading by remember { mutableStateOf(false) }
-
     Scaffold(
         bottomBar = {
             if (currentRoute != DietinScreen.Detail.route
@@ -115,7 +116,6 @@ fun DietinApp(
         NavHost(
             navController = navController,
             startDestination = DietinScreen.Home.route,
-            modifier = Modifier.padding(innerPadding)
         ) {
             composable(DietinScreen.Home.route) {
                 HomeScreen(
@@ -128,26 +128,11 @@ fun DietinApp(
                     username = username,
                     email = email,
                     photo = photo,
+                    authViewModel = authViewModel,
                     logOut = {
-                        isLoading = true
-                        auth.signOut()
-                        if (auth.currentUser == null) {
-                            userPreferenceViewModel.deleteAll()
-                            context.findActivity()?.finish()
-                            context.startActivity(
-                                Intent(
-                                    context,
-                                    AuthActivity::class.java
-                                )
-                            )
-                        } else {
-                            auth.signOut()
-                        }
+                        authViewModel.signOut(context, userPreferenceViewModel)
                     }
                 )
-                if (isLoading) {
-                    LoadingScreen()
-                }
             }
             composable(DietinScreen.Scan.route) {
                 ScanScreen(
@@ -171,10 +156,4 @@ fun DietinApp(
             }
         }
     }
-}
-
-private fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
 }

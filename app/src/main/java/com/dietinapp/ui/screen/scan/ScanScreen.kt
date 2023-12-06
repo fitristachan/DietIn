@@ -1,7 +1,6 @@
 package com.dietinapp.ui.screen.scan
 
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -43,19 +42,14 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dietinapp.R
-import com.dietinapp.ml.NasnetMobile
+import com.dietinapp.model.indexResult
+import com.dietinapp.model.processImage
 import com.dietinapp.ui.component.CameraPreview
 import com.dietinapp.ui.component.LoadingScreen
 import com.dietinapp.utils.Permission
 import com.dietinapp.utils.createCustomTempFile
 import com.dietinapp.ui.component.executor
 import com.dietinapp.ui.component.getCameraProvider
-import com.dietinapp.utils.uriToBitmap
-import org.tensorflow.lite.DataType
-import org.tensorflow.lite.support.image.ImageProcessor
-import org.tensorflow.lite.support.image.TensorImage
-import org.tensorflow.lite.support.image.ops.ResizeOp
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 
 @Composable
 fun ScanScreen(
@@ -205,43 +199,3 @@ fun ScanScreen(
     }
 }
 
-private fun processImage(context: Context, imageUri: Uri?) {
-    imageUri?.let { uri ->
-        val imageBitmap = uriToBitmap(context, uri)
-        val model = NasnetMobile.newInstance(context)
-
-        if (imageBitmap != null) {
-            val imageProcessor = ImageProcessor.Builder()
-                .add(ResizeOp(331, 331, ResizeOp.ResizeMethod.BILINEAR))
-                .build()
-
-            val tensorImage = TensorImage(DataType.FLOAT32)
-            tensorImage.load(imageBitmap)
-            val processedImage = imageProcessor.process(tensorImage)
-
-            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 331, 331, 3), DataType.FLOAT32)
-            inputFeature0.loadBuffer(processedImage.buffer)
-
-            val outputs = model.process(inputFeature0)
-            val outputFeature0 = outputs.outputFeature0AsTensorBuffer.floatArray
-
-            var maxConfidence = outputFeature0[0]
-            var maxIndex = 0
-
-            outputFeature0.forEachIndexed { index, confidence ->
-                if (confidence > maxConfidence) {
-                    maxConfidence = confidence
-                    maxIndex = index
-                }
-            }
-
-            indexResult = maxIndex
-
-        } else {
-            Toast.makeText(context, "Failed to load image bitmap.", Toast.LENGTH_SHORT).show()
-        }
-        model.close()
-    }
-}
-
-var indexResult by mutableStateOf(0)

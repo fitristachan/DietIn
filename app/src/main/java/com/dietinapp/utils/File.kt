@@ -43,3 +43,15 @@ fun createCustomTempFile(context: Context): File {
     val filesDir = context.externalCacheDir
     return File.createTempFile(timeStamp, ".jpg", filesDir)
 }
+
+fun deleteTempFile(file: File): Boolean {
+    return try {
+        if (file.exists()) {
+            file.delete()
+        } else {
+            false
+        }
+    } catch (e: Exception) {
+        false
+    }
+}

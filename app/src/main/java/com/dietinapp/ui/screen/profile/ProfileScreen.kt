@@ -35,12 +35,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.dietinapp.R
+import com.dietinapp.firebase.AuthViewModel
+import com.dietinapp.ui.component.LoadingScreen
 import com.dietinapp.ui.component.ProfileItemPainter
 import com.dietinapp.ui.component.ProfileItemVector
 import com.dietinapp.utils.capitalizeFirstLetter
@@ -48,11 +51,19 @@ import com.dietinapp.utils.capitalizeFirstLetter
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel,
     username: String,
     email: String,
     photo: String,
     logOut: () -> Unit,
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    var isLoading by remember { mutableStateOf(false) }
+    authViewModel.isLoading.observe(lifecycleOwner) {
+        isLoading = it
+    }
+
     Column(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -91,6 +102,12 @@ fun ProfileScreen(
                     modifier = Modifier
                         .size(70.dp)
                         .clip(shape = CircleShape)
+                        .clickable(
+                            enabled = true,
+                            onClick = {
+
+                            }
+                        )
                 )
             }
 
@@ -228,6 +245,10 @@ fun ProfileScreen(
                     )
                 }
             }
+            if (isLoading) {
+                LoadingScreen()
+            }
+
             LogoutConfirmationDialog(
                 showDialog = showDialog,
                 onConfirm = {

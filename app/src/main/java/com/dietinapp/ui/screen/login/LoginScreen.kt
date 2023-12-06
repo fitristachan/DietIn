@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -47,30 +48,40 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.dietinapp.R
-import com.dietinapp.firebase.loginCustom
+import com.dietinapp.firebase.AuthViewModel
 import com.dietinapp.ui.component.LoadingScreen
 import com.dietinapp.utils.errorDialog
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    auth: FirebaseAuth,
+    authViewModel: AuthViewModel,
     navigateToRegister: () -> Unit,
     loginGoogle: () -> Unit,
-    onAuthComplete: (AuthResult) -> Unit,
+    onClick: () -> Unit,
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     val state = rememberScrollState()
 
     var showDialog by remember { mutableStateOf(false) }
+    authViewModel.showDialog.observe(lifecycleOwner) {
+        showDialog = it
+    }
 
     var authError by remember { mutableStateOf("") }
+    authViewModel.errorMessage.observe(lifecycleOwner) {
+        authError = it
+    }
+
     var isLoading by remember { mutableStateOf(false) }
+    authViewModel.isLoading.observe(lifecycleOwner) {
+        isLoading = it
+    }
 
     var email by remember { mutableStateOf("") }
+
     var password by remember { mutableStateOf("") }
 
     var isEmailError by rememberSaveable { mutableStateOf(false) }
@@ -241,19 +252,9 @@ fun LoginScreen(
         Column {
             Button(
                 onClick = {
-                    isLoading = true
-                    loginCustom(
-                        auth = auth,
-                        email = email,
-                        password = password,
-                        onAuthComplete = {
-                            onAuthComplete(it)
-                        },
-                        onAuthError = { errorMsg ->
-                            authError = errorMsg.toString()
-                            showDialog = true
-                        }
-                    )
+                    authViewModel.email.value = email
+                    authViewModel.password.value = password
+                    onClick()
                 },
                 enabled = !isEmailError && !isPasswordError
                         && email.isNotEmpty() && password.isNotEmpty(),
