@@ -60,4 +60,6 @@
     <string name="username_contain_space">Tidak boleh terdapat spasi atau enter</string>
     <string name="password_length_warning">Password kurang dari 6 karakter</string>
     <string name="password_patern_warning">Harus mengandung huruf kapital, angka, simbol dan tidak mengandung spasi</string>
+    <string name="failed_load_bitmap">Failed to load image bitmap.</string>
+    <string name="unknown_index">Maaf kami tidak dapat mendeteksi gambar, mohon ulang kembali.</string>
 </resources>

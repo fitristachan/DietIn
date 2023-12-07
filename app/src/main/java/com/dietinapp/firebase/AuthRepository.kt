@@ -4,11 +4,9 @@ import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import com.dietinapp.data.datastore.UserPreferenceViewModel
-import com.dietinapp.ui.activity.AuthActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.AuthResult
@@ -134,27 +132,16 @@ class AuthRepository private constructor(
     }
 
     fun signOut(
-        context: Context,
-        userPreferenceViewModel: UserPreferenceViewModel
+        userPreferenceViewModel: UserPreferenceViewModel,
+        onSignOutComplete: () -> Unit
     ){
+        firebaseAuth.signOut()
         if (firebaseAuth.currentUser == null) {
             userPreferenceViewModel.deleteAll()
-            context.findActivity()?.finish()
-            context.startActivity(
-                Intent(
-                    context,
-                    AuthActivity::class.java
-                )
-            )
+            onSignOutComplete()
         } else {
             firebaseAuth.signOut()
         }
-    }
-
-    private fun Context.findActivity(): Activity? = when (this) {
-        is Activity -> this
-        is ContextWrapper -> baseContext.findActivity()
-        else -> null
     }
 
     companion object {

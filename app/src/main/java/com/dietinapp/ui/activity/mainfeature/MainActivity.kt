@@ -1,5 +1,9 @@
 package com.dietinapp.ui.activity.mainfeature
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +35,7 @@ import com.dietinapp.data.datastore.UserPreferenceViewModelFactory
 import com.dietinapp.data.datastore.dataStore
 import com.dietinapp.firebase.AuthViewModel
 import com.dietinapp.firebase.AuthViewModelFactory
+import com.dietinapp.ui.activity.AuthActivity
 import com.dietinapp.ui.navigation.DietinScreen
 import com.dietinapp.ui.screen.detail.DetailScreen
 import com.dietinapp.ui.screen.home.HomeScreen
@@ -114,6 +119,7 @@ fun DietinApp(
         }
     ) { innerPadding ->
         NavHost(
+            modifier = Modifier.padding(innerPadding),
             navController = navController,
             startDestination = DietinScreen.Home.route,
         ) {
@@ -130,20 +136,33 @@ fun DietinApp(
                     photo = photo,
                     authViewModel = authViewModel,
                     logOut = {
-                        authViewModel.signOut(context, userPreferenceViewModel)
+                        authViewModel.signOut(
+                            userPreferenceViewModel,
+                            onSignOutComplete = {
+                                context.findActivity()?.finish()
+                                context.startActivity(
+                                    Intent(
+                                        context,
+                                        AuthActivity::class.java
+                                    )
+                                )
+                            })
                     }
                 )
             }
             composable(DietinScreen.Scan.route) {
                 ScanScreen(
                     navigateToDetail = {
-                        navController.navigate(DietinScreen.Detail.createRoute(it))
+                            val route = DietinScreen.Detail.createRoute(it)
+                            navController.navigate(route)
                     }
                 )
             }
             composable(
                 route = DietinScreen.Detail.route,
-                arguments = listOf(navArgument("scanId") { type = NavType.IntType }),
+                arguments = listOf(
+                    navArgument("scanId") { type = NavType.IntType }
+                )
             ) {
                 val id = it.arguments?.getInt("scanId") ?: 0
                 DetailScreen(
@@ -156,4 +175,10 @@ fun DietinApp(
             }
         }
     }
+}
+
+private fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

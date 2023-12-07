@@ -7,7 +7,7 @@ sealed class DietinScreen (val route: String) {
     object Profile : DietinScreen("profile")
     object History: DietinScreen("history")
     object Detail : DietinScreen("home/{scanId}") {
-        fun createRoute(scanId: Int) = "home/$scanId"
+        fun createRoute(scanId: Int): String = "home/$scanId"
     }
 
 }

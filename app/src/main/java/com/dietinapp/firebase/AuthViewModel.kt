@@ -43,6 +43,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             onAuthError = {
                 _isLoading.value = false
                 _errorMessage.value = it.message
+                _showDialog.value = true
             })
     }
 
@@ -88,6 +89,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun loginByCustom(
         userPreferenceViewModel: UserPreferenceViewModel,
     ) {
+        _isLoading.value = true
         authRepository.loginCustom(
             email = email.value.toString(),
             password = password.value.toString(),
@@ -98,6 +100,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             onAuthError = {
                 _isLoading.value = false
                 _errorMessage.value = it
+                _showDialog.value = true
             }
         )
     }
@@ -136,11 +139,13 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
     fun signOut(
-        context: Context,
-        userPreferenceViewModel: UserPreferenceViewModel
+        userPreferenceViewModel: UserPreferenceViewModel,
+        onSignOutComplete: () -> Unit
     ){
         _isLoading.value = true
-        authRepository.signOut(context, userPreferenceViewModel)
+        authRepository.signOut(
+            userPreferenceViewModel,
+            onSignOutComplete)
         _isLoading.value = false
     }
 }

@@ -21,7 +21,16 @@ fun readRecipesFromJson(context: Context): List<Recipe> {
 
             val id = recipeObject?.optInt("id") ?: -1
             val name = recipeObject?.optString("name") ?: ""
-            val status = recipeObject?.optString("status") ?: ""
+
+            val status = if (recipeObject?.optString("status") == "low"){
+                "Rendah Lektin"
+            } else if (recipeObject?.optString("status") == "high"){
+                "Tinggi Lektin"
+            } else {
+                "Belum Diketahui"
+            }
+
+//            val status = recipeObject?.optString("status") ?: ""
 
             val ingredientsList = mutableListOf<Ingredient>()
             val ingredientsArray = recipeObject?.optJSONArray("ingredients")
@@ -30,7 +39,15 @@ fun readRecipesFromJson(context: Context): List<Recipe> {
                 for (j in 0 until ingArray.length()) {
                     val ingredientObject = ingArray.optJSONObject(j)
                     val ingredientName = ingredientObject?.optString("name") ?: ""
-                    val ingredientStatus = ingredientObject?.optString("status") ?: ""
+
+                    val ingredientStatus = if (ingredientObject?.optString("status") == "low"){
+                        "Rendah Lektin"
+                    } else if (ingredientObject?.optString("status") == "high"){
+                        "Tinggi Lektin"
+                    } else {
+                        "Belum Diketahui"
+                    }
+
                     val ingredient = Ingredient(ingredientName, ingredientStatus)
                     ingredientsList.add(ingredient)
                 }

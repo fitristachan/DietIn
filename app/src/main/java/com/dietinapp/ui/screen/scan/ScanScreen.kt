@@ -42,8 +42,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dietinapp.R
-import com.dietinapp.model.indexResult
 import com.dietinapp.model.processImage
+import com.dietinapp.model.uri
 import com.dietinapp.ui.component.CameraPreview
 import com.dietinapp.ui.component.LoadingScreen
 import com.dietinapp.utils.Permission
@@ -146,8 +146,13 @@ fun ScanScreen(
                                 object : ImageCapture.OnImageSavedCallback {
                                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                                         imageUri = output.savedUri
-                                        processImage(context, imageUri)
-                                        navigateToDetail(indexResult)
+                                        uri.value = output.savedUri.toString()
+                                        // Call the function and pass a callback to receive the result
+                                        processImage(context, imageUri) { result ->
+                                            navigateToDetail(result)
+                                        }
+
+
                                     }
 
                                     override fun onError(ex: ImageCaptureException) {
