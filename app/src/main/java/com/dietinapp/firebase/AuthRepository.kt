@@ -1,12 +1,9 @@
 package com.dietinapp.firebase
 
-import android.app.Activity
 import android.content.ContentValues.TAG
-import android.content.Context
-import android.content.ContextWrapper
 import android.util.Log
 import androidx.activity.result.ActivityResult
-import com.dietinapp.data.datastore.UserPreferenceViewModel
+import com.dietinapp.database.datastore.UserPreferenceViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.AuthResult

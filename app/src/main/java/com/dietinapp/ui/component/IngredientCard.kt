@@ -39,6 +39,6 @@ fun IngredientCard(
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 16.dp))
+                .padding(vertical = 24.dp, horizontal = 16.dp))
     }
 }

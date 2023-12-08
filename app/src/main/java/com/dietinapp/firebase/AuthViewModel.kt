@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import com.dietinapp.data.datastore.UserPreferenceViewModel
+import com.dietinapp.database.datastore.UserPreferenceViewModel
 import com.dietinapp.ui.navigation.AuthScreen
 import com.google.firebase.auth.AuthResult
 import kotlin.coroutines.CoroutineContext

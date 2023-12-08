@@ -1,4 +1,4 @@
-package com.dietinapp.data.datastore
+package com.dietinapp.database.datastore
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData

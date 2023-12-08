@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -21,6 +23,14 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val localProperties = project.rootProject.file("local.properties")
+        val properties = Properties().apply {
+            load(localProperties.inputStream())
+        }
+
+        val baseUrl = properties.getProperty("BASE_URL")
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
     buildTypes {
@@ -42,6 +52,7 @@ android {
     buildFeatures {
         compose = true
         mlModelBinding = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"

@@ -1,4 +1,4 @@
-package com.dietinapp.ui.activity.mainfeature
+package com.dietinapp.ui.activity
 
 import android.app.Activity
 import android.content.Context
@@ -29,10 +29,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.dietinapp.data.datastore.UserPreference
-import com.dietinapp.data.datastore.UserPreferenceViewModel
-import com.dietinapp.data.datastore.UserPreferenceViewModelFactory
-import com.dietinapp.data.datastore.dataStore
+import com.dietinapp.database.datastore.UserPreference
+import com.dietinapp.database.datastore.UserPreferenceViewModel
+import com.dietinapp.database.datastore.UserPreferenceViewModelFactory
+import com.dietinapp.database.datastore.dataStore
 import com.dietinapp.firebase.AuthViewModel
 import com.dietinapp.firebase.AuthViewModelFactory
 import com.dietinapp.ui.activity.AuthActivity

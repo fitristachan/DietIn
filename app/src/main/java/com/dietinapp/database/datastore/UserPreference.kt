@@ -1,4 +1,4 @@
-package com.dietinapp.data.datastore
+package com.dietinapp.database.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore

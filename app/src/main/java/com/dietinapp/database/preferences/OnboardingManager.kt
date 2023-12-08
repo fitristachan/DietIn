@@ -1,4 +1,4 @@
-package com.dietinapp.data.preferences
+package com.dietinapp.database.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
