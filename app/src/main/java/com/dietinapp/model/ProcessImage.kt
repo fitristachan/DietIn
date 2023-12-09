@@ -12,7 +12,8 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-var uri = mutableStateOf("")
+var imageUriTemp = mutableStateOf("")
+
 fun processImage(context: Context, imageUri: Uri?, callback: (Int) -> Unit) {
     imageUri?.let { uri ->
         val imageBitmap = uriToBitmap(context, uri)
@@ -64,6 +65,7 @@ fun processImage(context: Context, imageUri: Uri?, callback: (Int) -> Unit) {
             
             // Invoke the callback with the result
             callback.invoke(maxPos)
+            imageUriTemp.value = imageUri.toString()
 
             downsampledBitmap.recycle()
         } else {

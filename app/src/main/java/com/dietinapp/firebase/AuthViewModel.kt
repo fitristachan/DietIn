@@ -68,22 +68,36 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
     fun registerByGoogle(
-        onAuthComplete: () -> Unit,
+        result: ActivityResult,
+        context: CoroutineContext,
+        navController: NavController,
+        userPreferenceViewModel: UserPreferenceViewModel,
     ) {
         _isLoading.value = true
-        authRepository.registerByGoogle(
-            username = username.value.toString(),
-            password = password.value.toString(),
-            onAuthComplete = {
+        authRepository.rememberFirebaseAuthLauncher(
+            result,
+            context,
+            onAuthComplete = { authResult ->
                 _isLoading.value = false
-                onAuthComplete()
+                authRepository.registerByGoogle(
+                    username = username.value.toString(),
+                    password = password.value.toString(),
+                    onAuthComplete = {
+                        _isLoading.value = false
+                        saveUserByGoogle(navController, userPreferenceViewModel, authResult)
+                    },
+                    onAuthError = { errorMsg ->
+                        _isLoading.value = false
+                        _errorMessage.value = errorMsg.toString()
+                        _showDialog.value = true
+                    },
+                )
             },
-            onAuthError = { errorMsg ->
+            onAuthError = {
                 _isLoading.value = false
-                _errorMessage.value = errorMsg.toString()
+                _errorMessage.value = it.message
                 _showDialog.value = true
-            },
-        )
+            })
     }
 
     fun loginByCustom(
@@ -114,13 +128,19 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             val email = result.user?.email.toString()
             navController.navigate(AuthScreen.RegisterByGoogle.createRoute(email))
         } else {
-            userPreferenceViewModel.saveToken(
-                token = result.user?.uid.toString(),
-                username = result.user?.displayName.toString(),
-                email = result.user?.email.toString(),
-                photo = result.user?.photoUrl.toString(),
-                session = true
-            )
+            result.user?.getIdToken(true)
+                ?.addOnSuccessListener {
+                    userPreferenceViewModel.saveToken(
+                        token = it.token.toString(),
+                        username = result.user?.displayName.toString(),
+                        email = result.user?.email.toString(),
+                        photo = result.user?.photoUrl.toString(),
+                        session = true
+                    )
+                }
+                ?.addOnFailureListener {
+                    _errorMessage.value = it.message
+                }
         }
     }
 
@@ -128,24 +148,30 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         userPreferenceViewModel: UserPreferenceViewModel,
         result: AuthResult
     ) {
-        userPreferenceViewModel.saveToken(
-            token = result.user?.uid.toString(),
-            username = result.user?.displayName.toString(),
-            email = result.user?.email.toString(),
-            photo = result.user?.photoUrl.toString(),
-            session = true
-        )
-
+        result.user?.getIdToken(true)
+            ?.addOnSuccessListener {
+                userPreferenceViewModel.saveToken(
+                    token = it.token.toString(),
+                    username = result.user?.displayName.toString(),
+                    email = result.user?.email.toString(),
+                    photo = result.user?.photoUrl.toString(),
+                    session = true
+                )
+            }
+            ?.addOnFailureListener {
+                _errorMessage.value = it.message
+            }
     }
 
     fun signOut(
         userPreferenceViewModel: UserPreferenceViewModel,
         onSignOutComplete: () -> Unit
-    ){
+    ) {
         _isLoading.value = true
         authRepository.signOut(
             userPreferenceViewModel,
-            onSignOutComplete)
+            onSignOutComplete
+        )
         _isLoading.value = false
     }
 }

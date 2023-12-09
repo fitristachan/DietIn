@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,7 +36,6 @@ import com.dietinapp.database.datastore.UserPreferenceViewModelFactory
 import com.dietinapp.database.datastore.dataStore
 import com.dietinapp.firebase.AuthViewModel
 import com.dietinapp.firebase.AuthViewModelFactory
-import com.dietinapp.ui.activity.MainActivity
 import com.dietinapp.ui.navigation.AuthScreen
 import com.dietinapp.ui.screen.login.LoginScreen
 import com.dietinapp.ui.screen.register.RegisterByGoogleScreen
@@ -103,8 +104,15 @@ fun Auth(
     val context = LocalContext.current
     val coroutineContext = rememberCoroutineScope().coroutineContext
     val token = stringResource(R.string.default_web_client_id)
+    val email = remember { mutableStateOf("") }
 
     val launcher = rememberFirebaseAuthLauncher(
+        context = coroutineContext,
+        navController = navController,
+        authViewModel = authViewModel,
+        userPreferenceViewModel = userPreferenceViewModel)
+
+    val launcherGoogle = rememberRegisterLauncher(
         context = coroutineContext,
         navController = navController,
         authViewModel = authViewModel,
@@ -140,22 +148,18 @@ fun Auth(
             route = AuthScreen.RegisterByGoogle.route,
             arguments = listOf(navArgument("email") { type = NavType.StringType }),
         ) {
-            val email = it.arguments?.getString("email") ?: ""
+            email.value = it.arguments?.getString("email") ?: ""
             RegisterByGoogleScreen(
-                email = email,
+                email = email.value,
                 authViewModel = authViewModel,
                 onClick = {
-                    authViewModel.registerByGoogle(
-                        onAuthComplete = {
-                            val gso =
-                                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                    .requestIdToken(token)
-                                    .requestEmail()
-                                    .build()
-                            val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                            launcher.launch(googleSignInClient.signInIntent)
-                        }
-                    )
+                    val gso =
+                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(token)
+                            .requestEmail()
+                            .build()
+                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+                    launcherGoogle.launch(googleSignInClient.signInIntent)
                 },
             )
         }
@@ -198,5 +202,24 @@ fun rememberFirebaseAuthLauncher(
             )
         }
 
+    return launcher
+}
+
+@Composable
+fun rememberRegisterLauncher(
+    context: CoroutineContext,
+    navController: NavController,
+    authViewModel: AuthViewModel,
+    userPreferenceViewModel: UserPreferenceViewModel
+): ManagedActivityResultLauncher<Intent, ActivityResult> {
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            authViewModel.registerByGoogle(
+                result = result,
+                context = context,
+                navController = navController,
+                userPreferenceViewModel = userPreferenceViewModel
+            )
+        }
     return launcher
 }

@@ -1,7 +1,7 @@
 package com.dietinapp.retrofit.api
 
 import com.dietinapp.retrofit.response.HistoriesResponse
-import com.dietinapp.retrofit.response.AddHistoryResponse
+import com.dietinapp.retrofit.response.HistoryResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -19,20 +19,19 @@ interface ApiService {
     ): HistoriesResponse
 
     @GET("history")
-    suspend fun getHistoryLimited(
-
-    ): HistoriesResponse
+    fun getHistoriesLimited(): Call<HistoriesResponse>
 
     @GET("history/{historyId}")
-    suspend fun getDetailHistory(
+    fun getDetailHistory(
         @Path("historyId") historyId: String
-
-    ): HistoriesResponse
+    ): Call<HistoryResponse>
 
     @Multipart
     @POST("history")
     fun addHistory(
-        @Part file: MultipartBody.Part,
-        @Part("description") description: RequestBody,
-    ): Call<AddHistoryResponse>
+        @Part foodPhoto: MultipartBody.Part,
+        @Part("foodName") foodName: RequestBody,
+        @Part("lectineStatus") lectineStatus: Boolean,
+        @Part("ingredients") ingredients: RequestBody,
+    ): Call<HistoryResponse>
 }

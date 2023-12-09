@@ -22,13 +22,7 @@ fun readRecipesFromJson(context: Context): List<Recipe> {
             val id = recipeObject?.optInt("id") ?: -1
             val name = recipeObject?.optString("name") ?: ""
 
-            val status = if (recipeObject?.optString("status") == "low"){
-                "Rendah Lektin"
-            } else if (recipeObject?.optString("status") == "high"){
-                "Tinggi Lektin"
-            } else {
-                "Belum Diketahui"
-            }
+            val status = recipeObject?.optString("status") != "low"
 
 //            val status = recipeObject?.optString("status") ?: ""
 
@@ -40,13 +34,7 @@ fun readRecipesFromJson(context: Context): List<Recipe> {
                     val ingredientObject = ingArray.optJSONObject(j)
                     val ingredientName = ingredientObject?.optString("name") ?: ""
 
-                    val ingredientStatus = if (ingredientObject?.optString("status") == "low"){
-                        "Rendah Lektin"
-                    } else if (ingredientObject?.optString("status") == "high"){
-                        "Tinggi Lektin"
-                    } else {
-                        "Belum Diketahui"
-                    }
+                    val ingredientStatus = ingredientObject?.optString("status") != "low"
 
                     val ingredient = Ingredient(ingredientName, ingredientStatus)
                     ingredientsList.add(ingredient)

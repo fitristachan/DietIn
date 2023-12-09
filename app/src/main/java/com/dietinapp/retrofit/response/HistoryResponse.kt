@@ -2,7 +2,7 @@ package com.dietinapp.retrofit.response
 
 import com.google.gson.annotations.SerializedName
 
-data class AddHistoryResponse(
+data class HistoryResponse(
 
 	@field:SerializedName("data")
 	val data: Data,

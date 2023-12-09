@@ -1,6 +1,8 @@
 package com.dietinapp.database.datastore
 
+import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +26,13 @@ class UserPreferenceViewModel (private val pref: UserPreference) : ViewModel() {
         return pref.getPhoto().asLiveData()
     }
 
+    fun getToken(): LiveData<String?>{
+        val token = MutableLiveData("")
+        viewModelScope.launch {
+            token.value = pref.getToken()
+        }
+        return token
+    }
 
     fun saveToken(token: String, session: Boolean, username: String, email: String, photo: String) {
         viewModelScope.launch {

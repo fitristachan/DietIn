@@ -6,6 +6,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object ApiConfig {
     fun getApiService(token: String): ApiService {
@@ -14,17 +15,22 @@ object ApiConfig {
 
         val authInterceptor = Interceptor { chain ->
             val req = chain.request()
-            val requestHeaders =
-                req.newBuilder().addHeader("historyAuth", "$token").build()
-            chain.proceed(requestHeaders)
+            val authenticatedRequest = req.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+            chain.proceed(authenticatedRequest)
         }
+
 
         val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor).build()
 
         val apiUrl = BuildConfig.BASE_URL
         val retrofit =
-            Retrofit.Builder().baseUrl(apiUrl).addConverterFactory(GsonConverterFactory.create())
+            Retrofit.Builder()
+                .baseUrl(apiUrl)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
                 .client(client).build()
         return retrofit.create(ApiService::class.java)
     }

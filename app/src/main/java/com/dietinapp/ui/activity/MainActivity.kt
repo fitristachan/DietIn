@@ -35,7 +35,8 @@ import com.dietinapp.database.datastore.UserPreferenceViewModelFactory
 import com.dietinapp.database.datastore.dataStore
 import com.dietinapp.firebase.AuthViewModel
 import com.dietinapp.firebase.AuthViewModelFactory
-import com.dietinapp.ui.activity.AuthActivity
+import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
+import com.dietinapp.retrofit.data.viewmodel.HistoryViewModelFactory
 import com.dietinapp.ui.navigation.DietinScreen
 import com.dietinapp.ui.screen.detail.DetailScreen
 import com.dietinapp.ui.screen.home.HomeScreen
@@ -51,6 +52,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
     private val authViewModel by viewModels<AuthViewModel> {
         AuthViewModelFactory.getInstance(application)
+    }
+
+    private val historyViewModel by viewModels<HistoryViewModel> {
+        HistoryViewModelFactory.getInstance(application)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,8 +77,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     DietinApp(
+                        historyViewModel = historyViewModel,
                         authViewModel = authViewModel,
-                        userPreferenceViewModel = userPreferenceViewModel)
+                        userPreferenceViewModel = userPreferenceViewModel
+                    )
                 }
             }
         }
@@ -85,6 +92,7 @@ fun DietinApp(
     modifier: Modifier = Modifier,
     userPreferenceViewModel: UserPreferenceViewModel,
     authViewModel: AuthViewModel,
+    historyViewModel: HistoryViewModel,
     navController: NavHostController = rememberNavController(),
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -93,19 +101,24 @@ fun DietinApp(
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    var username by remember {mutableStateOf("")}
-    userPreferenceViewModel.getUsername().observe(lifecycleOwner){
+    var username by remember { mutableStateOf("") }
+    userPreferenceViewModel.getUsername().observe(lifecycleOwner) {
         username = it.toString()
     }
 
-    var email by remember {mutableStateOf("")}
-    userPreferenceViewModel.getEmail().observe(lifecycleOwner){
+    var email by remember { mutableStateOf("") }
+    userPreferenceViewModel.getEmail().observe(lifecycleOwner) {
         email = it.toString()
     }
 
-    var photo by remember {mutableStateOf("")}
-    userPreferenceViewModel.getPhoto().observe(lifecycleOwner){
+    var photo by remember { mutableStateOf("") }
+    userPreferenceViewModel.getPhoto().observe(lifecycleOwner) {
         photo = it.toString()
+    }
+
+    var token by remember { mutableStateOf("") }
+    userPreferenceViewModel.getToken().observe(lifecycleOwner) {
+        token = it.toString()
     }
 
     Scaffold(
@@ -152,9 +165,11 @@ fun DietinApp(
             }
             composable(DietinScreen.Scan.route) {
                 ScanScreen(
+                    token = token,
+                    historyViewModel = historyViewModel,
                     navigateToDetail = {
-                            val route = DietinScreen.Detail.createRoute(it)
-                            navController.navigate(route)
+                        val route = DietinScreen.Detail.createRoute(it)
+                        navController.navigate(route)
                     }
                 )
             }

@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.dietinapp.R
-import com.dietinapp.model.uri
+import com.dietinapp.model.imageUriTemp
 import com.dietinapp.ui.component.IngredientCard
 import com.dietinapp.utils.readRecipesFromJson
 
@@ -52,7 +52,7 @@ fun DetailScreen(
     val label = recipes[scanId]
 
     val color =
-        if (label.status == "Rendah Lektin") MaterialTheme.colorScheme.primary
+        if (!label.status) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.tertiary
 
     Box(
@@ -89,10 +89,11 @@ fun DetailScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 56.dp),
+            .padding(top = 56.dp, bottom = 16.dp)
+            .padding(horizontal = 16.dp),
     ) {
         AsyncImage(
-            model = uri.value.toUri(),
+            model = imageUriTemp.value.toUri(),
             contentDescription = label.name,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -133,7 +134,7 @@ fun DetailScreen(
                     .wrapContentSize()
             ) {
                 Text(
-                    text = label.status,
+                    text = if (!label.status) "Rendah Lektin" else "Tinggi Lektin",
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
@@ -165,11 +166,11 @@ fun DetailScreen(
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                items(label.ingredients, key = { it.name }) { ingredient ->
+                items(label.ingredients, key = { it.ingredientName }) { ingredient ->
                     IngredientCard(
                         modifier = modifier,
-                        ingredientName = ingredient.name,
-                        status = ingredient.status
+                        ingredientName = ingredient.ingredientName,
+                        status = if (!ingredient.ingredientLectineStatus) "Rendah Lektin" else "Tinggi Lektin"
                     )
                 }
             }
