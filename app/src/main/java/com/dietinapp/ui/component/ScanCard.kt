@@ -2,6 +2,7 @@ package com.dietinapp.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +36,8 @@ import com.dietinapp.R
 @Composable
 fun ScanCard(
     modifier: Modifier,
-    foodName: String
+    foodName: String,
+    onClick: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -44,6 +46,9 @@ fun ScanCard(
             .padding(horizontal = 8.dp)
             .widthIn(min = 220.dp)
             .heightIn(min = 283.dp)
+            .clickable {
+                onClick()
+            }
     ) {
         Box(
             modifier = Modifier
@@ -113,5 +118,5 @@ fun ScanCard(
 @Preview
 @Composable
 fun ScanCardPreview() {
-    ScanCard(modifier = Modifier, foodName = "dummy")
+    ScanCard(modifier = Modifier, onClick = {}, foodName = "dummy")
 }

@@ -56,6 +56,7 @@ fun ProfileScreen(
     email: String,
     photo: String,
     logOut: () -> Unit,
+    navigateToHistory: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -195,7 +196,7 @@ fun ProfileScreen(
                         itemIcon = R.drawable.ic_history,
                         itemTint = MaterialTheme.colorScheme.primary,
                         textColor = MaterialTheme.colorScheme.onBackground,
-                        onClick = {  }
+                        onClick = {  navigateToHistory() }
                     )
                 }
 

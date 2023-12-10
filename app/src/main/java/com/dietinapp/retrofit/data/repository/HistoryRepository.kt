@@ -1,19 +1,16 @@
 package com.dietinapp.retrofit.data.repository
 
 import android.util.Log
-import androidx.core.net.toFile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.dietinapp.model.Ingredient
 import com.dietinapp.retrofit.api.ApiService
 import com.dietinapp.retrofit.response.HistoriesResponse
 import com.dietinapp.retrofit.response.HistoryResponse
-import com.dietinapp.utils.readRecipesFromJson
-import com.dietinapp.utils.reduceFileImage
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
@@ -49,15 +46,17 @@ class HistoryRepository private constructor(
         _errorMessage.value = ""
         _successMessage.value = ""
 
-        val requestFoodName = foodName.toRequestBody("text/plain".toMediaType())
+        val requestFoodName = foodName.toRequestBody("text/plain".toMediaTypeOrNull())
+
         val gson = Gson()
         val json = gson.toJson(ingredients)
         val requestIngredients = json.toRequestBody("application/json".toMediaType())
-        val requestImageFile = foodPhoto.asRequestBody("image/jpeg".toMediaType())
+
+        val imageFile = foodPhoto.asRequestBody("image/jpeg".toMediaType())
         val requestFoodPhoto = MultipartBody.Part.createFormData(
-            "foodPhoto",
+            "image",
             foodPhoto.name,
-            requestImageFile)
+            imageFile)
 
         val client = apiService.addHistory(requestFoodPhoto, requestFoodName, lectineStatus, requestIngredients)
 
@@ -93,6 +92,29 @@ class HistoryRepository private constructor(
         _successMessage.value = ""
 
         val client = apiService.getHistoriesLimited()
+
+        client.enqueue(object: Callback<HistoriesResponse> {
+            override fun onResponse(
+                call: Call<HistoriesResponse>,
+                response: Response<HistoriesResponse>
+            ) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _historiesResponse.value = response.body()
+                    _successMessage.value = response.message().toString()
+                } else {
+                    _errorMessage.value = response.message().toString()
+                }
+            }
+
+            override fun onFailure(call: Call<HistoriesResponse>, t: Throwable) {
+                _isLoading.value = false
+                val errorResponse = t.message
+                _errorMessage.value = errorResponse.toString()
+                Log.e("Add History Repo", "onFailure: $errorResponse")
+            }
+
+        })
 
         return historiesResponse
     }

@@ -4,15 +4,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
 import com.dietinapp.ml.ModelActivation153Cleaned9392V4
 import com.dietinapp.utils.uriToBitmap
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-
-var imageUriTemp = mutableStateOf("")
 
 fun processImage(context: Context, imageUri: Uri?, callback: (Int) -> Unit) {
     imageUri?.let { uri ->
@@ -65,7 +62,6 @@ fun processImage(context: Context, imageUri: Uri?, callback: (Int) -> Unit) {
             
             // Invoke the callback with the result
             callback.invoke(maxPos)
-            imageUriTemp.value = imageUri.toString()
 
             downsampledBitmap.recycle()
         } else {

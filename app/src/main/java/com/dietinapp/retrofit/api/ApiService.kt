@@ -29,7 +29,7 @@ interface ApiService {
     @Multipart
     @POST("history")
     fun addHistory(
-        @Part foodPhoto: MultipartBody.Part,
+        @Part image: MultipartBody.Part,
         @Part("foodName") foodName: RequestBody,
         @Part("lectineStatus") lectineStatus: Boolean,
         @Part("ingredients") ingredients: RequestBody,

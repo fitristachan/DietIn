@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
@@ -25,7 +24,7 @@ fun createCustomTempFile(context: Context): File {
     return File.createTempFile(timeStamp, ".jpg", filesDir)
 }
 
-fun saveToGallery(context: Context, imageUri: Uri) {
+fun saveToGallery(context: Context, imageUri: Uri, callback: (File?) -> Unit) {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
 
     val relativePath = Environment.DIRECTORY_PICTURES + File.separator + "DietIn"
@@ -43,14 +42,28 @@ fun saveToGallery(context: Context, imageUri: Uri) {
     val contentResolver = context.contentResolver
     val insertedUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
 
+    var file: File? = null
+
     insertedUri?.let { newUri ->
         contentResolver.openInputStream(imageUri)?.use { inputStream ->
             contentResolver.openOutputStream(newUri)?.use { outputStream ->
                 inputStream.copyTo(outputStream)
+                // Retrieve the file corresponding to the URI after insertion
+                val projection = arrayOf(MediaStore.Images.Media.DATA)
+                val cursor = context.contentResolver.query(newUri, projection, null, null, null)
+                cursor?.use {
+                    val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                    if (it.moveToFirst()) {
+                        val filePath = it.getString(columnIndex)
+                        file = File(filePath)
+                        callback.invoke(file)
+                    }
+                }
             }
         }
     }
 }
+
 
 fun uriToFile(imageUri: Uri, context: Context): File {
     val myFile = createCustomTempFile(context)

@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import com.dietinapp.database.datastore.UserPreferenceViewModel
 import com.dietinapp.ui.navigation.AuthScreen
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
 import kotlin.coroutines.CoroutineContext
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -32,6 +33,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         navController: NavController,
         userPreferenceViewModel: UserPreferenceViewModel,
     ) {
+        _errorMessage.value = ""
         _isLoading.value = true
         authRepository.rememberFirebaseAuthLauncher(
             result,
@@ -50,6 +52,7 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun registerByCustom(
         navController: NavController,
     ) {
+        _errorMessage.value = ""
         _isLoading.value = true
         authRepository.registerCustom(
             onAuthComplete = {
@@ -68,41 +71,31 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
     fun registerByGoogle(
-        result: ActivityResult,
-        context: CoroutineContext,
         navController: NavController,
-        userPreferenceViewModel: UserPreferenceViewModel,
+        email: String
     ) {
+        _errorMessage.value = ""
         _isLoading.value = true
-        authRepository.rememberFirebaseAuthLauncher(
-            result,
-            context,
-            onAuthComplete = { authResult ->
+        authRepository.registerByGoogle(
+            username = username.value.toString(),
+            password = password.value.toString(),
+            email = email,
+            onAuthComplete = {
                 _isLoading.value = false
-                authRepository.registerByGoogle(
-                    username = username.value.toString(),
-                    password = password.value.toString(),
-                    onAuthComplete = {
-                        _isLoading.value = false
-                        saveUserByGoogle(navController, userPreferenceViewModel, authResult)
-                    },
-                    onAuthError = { errorMsg ->
-                        _isLoading.value = false
-                        _errorMessage.value = errorMsg.toString()
-                        _showDialog.value = true
-                    },
-                )
+                navController.navigate(AuthScreen.Login.route)
             },
-            onAuthError = {
+            onAuthError = { errorMsg ->
                 _isLoading.value = false
-                _errorMessage.value = it.message
+                _errorMessage.value = errorMsg.toString()
                 _showDialog.value = true
-            })
+            },
+        )
     }
 
     fun loginByCustom(
         userPreferenceViewModel: UserPreferenceViewModel,
     ) {
+        _errorMessage.value = ""
         _isLoading.value = true
         authRepository.loginCustom(
             email = email.value.toString(),
@@ -162,6 +155,23 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
                 _errorMessage.value = it.message
             }
     }
+
+
+    fun tokenValidationCheck(
+        userPreferenceViewModel: UserPreferenceViewModel,
+        auth: FirebaseAuth
+    ) {
+        auth.currentUser?.getIdToken(true)
+            ?.addOnSuccessListener {
+                if (it.token.toString() != userPreferenceViewModel.getToken().value) {
+                    userPreferenceViewModel.reloadToken(it.token.toString())
+                }
+            }
+            ?.addOnFailureListener {
+
+            }
+    }
+
 
     fun signOut(
         userPreferenceViewModel: UserPreferenceViewModel,

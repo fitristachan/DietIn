@@ -91,25 +91,43 @@ class AuthRepository private constructor(
         onAuthComplete: () -> Unit,
         onAuthError: (String?) -> Unit,
         username: String,
-        password: String
+        password: String,
+        email: String
     ) {
-        val user = firebaseAuth.currentUser
-        if (user != null) {
-            user.updatePassword(password)
-            val userProfileChangeRequest = UserProfileChangeRequest.Builder()
-                .setDisplayName(username)
-                .build()
+        var user = firebaseAuth.currentUser
 
-            user.updateProfile(userProfileChangeRequest)
-                .addOnCompleteListener { profileUpdateTask ->
-                    if (profileUpdateTask.isSuccessful) {
-                        onAuthComplete()
-                    } else {
-                        onAuthError(profileUpdateTask.exception?.message)
-                    }
+        firebaseAuth.signOut() // Sign out the user first
+
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { signInTask ->
+                if (signInTask.isSuccessful) {
+                    user = firebaseAuth.currentUser // Update the user object after signing in
+
+                    user?.updatePassword(password)
+                        ?.addOnCompleteListener { passwordUpdateTask ->
+                            if (passwordUpdateTask.isSuccessful) {
+                                val userProfileChangeRequest = UserProfileChangeRequest.Builder()
+                                    .setDisplayName(username)
+                                    .build()
+
+                                user?.updateProfile(userProfileChangeRequest)
+                                    ?.addOnCompleteListener { profileUpdateTask ->
+                                        if (profileUpdateTask.isSuccessful) {
+                                            onAuthComplete()
+                                        } else {
+                                            onAuthError(profileUpdateTask.exception?.message)
+                                        }
+                                    }
+                            } else {
+                                onAuthError(passwordUpdateTask.exception?.message)
+                            }
+                        }
+                } else {
+                    onAuthError(signInTask.exception?.message)
                 }
-        }
+            }
     }
+
 
     fun loginCustom(
         email: String,
@@ -117,6 +135,7 @@ class AuthRepository private constructor(
         onAuthComplete: (AuthResult) -> Unit,
         onAuthError: (String?) -> Unit
     ) {
+        firebaseAuth.signOut()
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { signInTask ->
                 if (signInTask.isSuccessful) {
@@ -131,7 +150,7 @@ class AuthRepository private constructor(
     fun signOut(
         userPreferenceViewModel: UserPreferenceViewModel,
         onSignOutComplete: () -> Unit
-    ){
+    ) {
         firebaseAuth.signOut()
         if (firebaseAuth.currentUser == null) {
             userPreferenceViewModel.deleteAll()

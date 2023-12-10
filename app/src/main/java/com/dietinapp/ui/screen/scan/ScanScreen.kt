@@ -1,7 +1,6 @@
 package com.dietinapp.ui.screen.scan
 
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -48,10 +47,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toFile
 import com.dietinapp.R
-import com.dietinapp.model.Ingredient
-import com.dietinapp.model.processImage
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
 import com.dietinapp.ui.component.CameraPreview
 import com.dietinapp.ui.component.LoadingScreen
@@ -60,24 +56,15 @@ import com.dietinapp.utils.createCustomTempFile
 import com.dietinapp.ui.component.executor
 import com.dietinapp.ui.component.getCameraProvider
 import com.dietinapp.utils.deleteTempFile
-import com.dietinapp.utils.readRecipesFromJson
-import com.dietinapp.utils.reduceFileImage
-import com.dietinapp.utils.saveToGallery
-import com.dietinapp.utils.uriToFile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.dietinapp.utils.processAndFetch
+import com.dietinapp.utils.processAndFetchCamera
 
 @Composable
 fun ScanScreen(
     modifier: Modifier = Modifier,
-    token: String,
     historyViewModel: HistoryViewModel,
     navigateToDetail: (Int) -> Unit
 ) {
-    Log.d("token", "token: ${token}")
-
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -104,9 +91,8 @@ fun ScanScreen(
     { uri: Uri? ->
         if (uri != null) {
             isLoading = true
-            imageUri = uri
             processAndFetch(
-                imageUri = imageUri,
+                imageUri = uri,
                 context = context,
                 historyViewModel = historyViewModel,
                 onProcessAdditional = {
@@ -180,7 +166,7 @@ fun ScanScreen(
                     contentDescription = stringResource(R.string.open_gallery),
                     tint = Color.White,
                     modifier = Modifier
-                        .size(40.dp)
+                        .size(35.dp)
                 )
             }
 
@@ -216,14 +202,12 @@ fun ScanScreen(
                                 object : ImageCapture.OnImageSavedCallback {
                                     override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                                         imageUri = output.savedUri
-
                                         processAndFetchCamera(
                                             imageUri = imageUri,
                                             context = context,
                                             historyViewModel = historyViewModel,
                                             onProcessAdditional = {
-                                                saveToGallery(context, imageUri)
-//                                                deleteTempFile(photoFile)
+                                                deleteTempFile(photoFile)
                                             },
                                             navigateToDetail = {
                                                 navigateToDetail(it)
@@ -282,66 +266,4 @@ fun ScanScreen(
     }
 }
 
-fun processAndFetch(
-    imageUri: Uri,
-    context: Context,
-    historyViewModel: HistoryViewModel,
-    onProcessAdditional: () -> Unit,
-    navigateToDetail: (Int) -> Unit
-) {
-    // Execute the time-consuming task in a background thread using coroutines
-    CoroutineScope(Dispatchers.IO).launch {
-        processImage(context, imageUri) { result ->
-            val recipes = readRecipesFromJson(context)
-            val foodName = recipes[result].name
-            val lectineStatus = recipes[result].status
 
-            val ingredients: List<Ingredient> = recipes[result].ingredients
-
-            val foodPhoto = uriToFile(imageUri, context).reduceFileImage()
-            Log.d("Image File", "showImage: ${foodPhoto.path}")
-
-            CoroutineScope(Dispatchers.Main).launch {
-                historyViewModel.addHistory(
-                    foodPhoto = foodPhoto,
-                    foodName = foodName,
-                    lectineStatus = lectineStatus,
-                    ingredients = ingredients
-                )
-
-                onProcessAdditional()
-                navigateToDetail(result)
-            }
-        }
-    }
-}
-
-
-fun processAndFetchCamera(
-    imageUri: Uri,
-    context: Context,
-    historyViewModel: HistoryViewModel,
-    onProcessAdditional: () -> Unit,
-    navigateToDetail: (Int) -> Unit
-) {
-    processImage(context, imageUri) { result ->
-        val recipes = readRecipesFromJson(context)
-        val foodName = recipes[result].name
-        val lectineStatus = recipes[result].status
-
-        val ingredients: List<Ingredient> = recipes[result].ingredients
-
-        val foodPhoto = imageUri.toFile().reduceFileImage()
-        Log.d("Image File", "showImage: ${foodPhoto.path}")
-
-        historyViewModel.addHistory(
-            foodPhoto = foodPhoto,
-            foodName = foodName,
-            lectineStatus = lectineStatus,
-            ingredients = ingredients
-        )
-
-        onProcessAdditional()
-        navigateToDetail(result)
-    }
-}

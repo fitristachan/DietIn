@@ -61,6 +61,19 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
         }
     }
 
+    suspend fun saveOnlyToken(token: String) {
+        dataStore.edit { preferences ->
+            preferences[this.token] = token
+        }
+    }
+
+    suspend fun deleteOnlyToken() {
+        dataStore.edit { preferences ->
+            preferences[this.token] = ""
+        }
+    }
+
+
     suspend fun deleteAll() {
         dataStore.edit { preferences ->
             preferences[this.token] = ""

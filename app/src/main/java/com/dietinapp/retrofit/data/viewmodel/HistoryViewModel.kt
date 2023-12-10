@@ -7,8 +7,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.dietinapp.model.Ingredient
 import com.dietinapp.retrofit.data.di.HistoryInjection
 import com.dietinapp.retrofit.data.repository.HistoryRepository
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import java.io.File
 
 class HistoryViewModel(
@@ -23,10 +21,11 @@ class HistoryViewModel(
         foodName: String,
         lectineStatus: Boolean,
         ingredients: List<Ingredient>,
-    ) {
-        historyRepository.addHistory(
-            foodPhoto, foodName, lectineStatus, ingredients
-        )
+    ) = historyRepository.addHistory(foodPhoto, foodName, lectineStatus, ingredients)
+
+
+    fun getHistoriesLimited(){
+
     }
 }
 

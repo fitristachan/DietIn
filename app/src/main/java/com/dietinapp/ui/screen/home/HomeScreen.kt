@@ -39,7 +39,9 @@ import com.dietinapp.utils.capitalizeFirstLetter
 fun HomeScreen(
     modifier: Modifier = Modifier,
     username: String,
-    photo: String
+    photo: String,
+    navigateToDetail: () -> Unit,
+    navigateToHistory: () -> Unit
 ){
     Column(
         modifier = Modifier
@@ -109,7 +111,7 @@ fun HomeScreen(
                 style = MaterialTheme.typography.headlineSmall)
 
             TextButton(
-                onClick = { /*TODO*/ },
+                onClick = { navigateToHistory() },
             ) {
                 Text(
                     text = stringResource(R.string.see_more),
@@ -129,7 +131,10 @@ fun HomeScreen(
             items(count = 10) { index ->
                 ScanCard(
                     modifier = Modifier,
-                    foodName = index.toString()
+                    foodName = index.toString(),
+                    onClick = {
+                        navigateToDetail()
+                    }
                 )
             }
         }

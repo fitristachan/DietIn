@@ -44,6 +44,7 @@ import com.dietinapp.ui.screen.profile.ProfileScreen
 import com.dietinapp.ui.screen.scan.ScanScreen
 import com.dietinapp.ui.theme.DietInTheme
 import com.dietinapp.ui.component.BottomBar
+import com.dietinapp.ui.screen.history.HistoryScreen
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -68,6 +69,13 @@ class MainActivity : ComponentActivity() {
                 this,
                 UserPreferenceViewModelFactory(pref)
             )[UserPreferenceViewModel::class.java]
+
+
+        userPreferenceViewModel.getSession().observe(this) { session: Boolean? ->
+            if (session == true && auth.currentUser != null) {
+                authViewModel.tokenValidationCheck(userPreferenceViewModel, auth)
+            }
+        }
 
         setContent {
             DietInTheme {
@@ -116,11 +124,6 @@ fun DietinApp(
         photo = it.toString()
     }
 
-    var token by remember { mutableStateOf("") }
-    userPreferenceViewModel.getToken().observe(lifecycleOwner) {
-        token = it.toString()
-    }
-
     Scaffold(
         bottomBar = {
             if (currentRoute != DietinScreen.Detail.route
@@ -139,7 +142,13 @@ fun DietinApp(
             composable(DietinScreen.Home.route) {
                 HomeScreen(
                     username = username,
-                    photo = photo
+                    photo = photo,
+                    navigateToHistory = {
+                        navController.navigate(DietinScreen.History.route)
+                    },
+                    navigateToDetail = {
+
+                    }
                 )
             }
             composable(DietinScreen.Profile.route) {
@@ -160,17 +169,24 @@ fun DietinApp(
                                     )
                                 )
                             })
+                    },
+                    navigateToHistory = {
+                        navController.navigate(DietinScreen.History.route)
                     }
                 )
             }
             composable(DietinScreen.Scan.route) {
                 ScanScreen(
-                    token = token,
                     historyViewModel = historyViewModel,
                     navigateToDetail = {
                         val route = DietinScreen.Detail.createRoute(it)
                         navController.navigate(route)
                     }
+                )
+            }
+            composable(DietinScreen.History.route) {
+                HistoryScreen(
+                    modifier = Modifier
                 )
             }
             composable(

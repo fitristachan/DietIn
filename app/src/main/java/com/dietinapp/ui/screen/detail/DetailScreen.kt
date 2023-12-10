@@ -1,5 +1,6 @@
 package com.dietinapp.ui.screen.detail
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +26,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,9 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.dietinapp.R
-import com.dietinapp.model.imageUriTemp
+import com.dietinapp.model.Ingredient
 import com.dietinapp.ui.component.IngredientCard
-import com.dietinapp.utils.readRecipesFromJson
+import com.dietinapp.model.readRecipesFromJson
+import com.dietinapp.utils.imageFileInGallery
 
 @Composable
 fun DetailScreen(
@@ -48,12 +53,26 @@ fun DetailScreen(
     navigateBack: () -> Unit
 ) {
     val context = LocalContext.current
+
+    var foodName by remember { mutableStateOf("") }
+    var foodStatus by remember { mutableStateOf("") }
+    var ingredients by remember { mutableStateOf<List<Ingredient>>(emptyList()) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val color =
+        if (foodStatus == "Rendah Lektin") MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.tertiary
+
     val recipes = remember { readRecipesFromJson(context) }
     val label = recipes[scanId]
+    if (label.name.isNotEmpty()){
+        foodName = label.name
+        foodStatus = if (!label.status) "Rendah Lektin" else "Tinggi Lektin"
+        ingredients = label.ingredients
+        imageUri = imageFileInGallery.value.toUri()
 
-    val color =
-        if (!label.status) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.tertiary
+    } else {
+        TODO()
+    }
 
     Box(
         modifier = Modifier
@@ -75,7 +94,7 @@ fun DetailScreen(
             //back button
             Image(
                 imageVector = Icons.Filled.ArrowBack,
-                contentDescription = label.name,
+                contentDescription = foodName,
                 modifier = Modifier
                     .size(35.dp)
                     .clickable {
@@ -93,8 +112,8 @@ fun DetailScreen(
             .padding(horizontal = 16.dp),
     ) {
         AsyncImage(
-            model = imageUriTemp.value.toUri(),
-            contentDescription = label.name,
+            model = imageUri ,
+            contentDescription = foodName,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(170.dp)
@@ -110,7 +129,7 @@ fun DetailScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = label.name,
+                text = foodName,
                 style = MaterialTheme.typography.headlineMedium
             )
         }
@@ -134,7 +153,7 @@ fun DetailScreen(
                     .wrapContentSize()
             ) {
                 Text(
-                    text = if (!label.status) "Rendah Lektin" else "Tinggi Lektin",
+                    text = foodStatus,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
@@ -166,7 +185,7 @@ fun DetailScreen(
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                items(label.ingredients, key = { it.ingredientName }) { ingredient ->
+                items(ingredients, key = { it.ingredientName }) { ingredient ->
                     IngredientCard(
                         modifier = modifier,
                         ingredientName = ingredient.ingredientName,
@@ -176,6 +195,4 @@ fun DetailScreen(
             }
         }
     }
-
-
 }

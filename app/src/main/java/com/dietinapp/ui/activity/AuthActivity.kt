@@ -65,6 +65,8 @@ class AuthActivity : ComponentActivity() {
                 UserPreferenceViewModelFactory(pref)
             )[UserPreferenceViewModel::class.java]
 
+        authViewModel.tokenValidationCheck(userPreferenceViewModel, auth)
+
         userPreferenceViewModel.getSession().observe(this) { session: Boolean? ->
             if (session == true && auth.currentUser != null) {
                 val intent = Intent(this, MainActivity::class.java)
@@ -72,8 +74,6 @@ class AuthActivity : ComponentActivity() {
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
-            } else if (session == false && auth.currentUser != null) {
-                auth.signOut()
             } else {
                 setContent {
                     DietInTheme {
@@ -110,13 +110,8 @@ fun Auth(
         context = coroutineContext,
         navController = navController,
         authViewModel = authViewModel,
-        userPreferenceViewModel = userPreferenceViewModel)
-
-    val launcherGoogle = rememberRegisterLauncher(
-        context = coroutineContext,
-        navController = navController,
-        authViewModel = authViewModel,
-        userPreferenceViewModel = userPreferenceViewModel)
+        userPreferenceViewModel = userPreferenceViewModel
+    )
 
     NavHost(
         navController = navController,
@@ -153,13 +148,10 @@ fun Auth(
                 email = email.value,
                 authViewModel = authViewModel,
                 onClick = {
-                    val gso =
-                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(token)
-                            .requestEmail()
-                            .build()
-                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                    launcherGoogle.launch(googleSignInClient.signInIntent)
+                    authViewModel.registerByGoogle(
+                        navController,
+                        email.value
+                    )
                 },
             )
         }
@@ -202,24 +194,5 @@ fun rememberFirebaseAuthLauncher(
             )
         }
 
-    return launcher
-}
-
-@Composable
-fun rememberRegisterLauncher(
-    context: CoroutineContext,
-    navController: NavController,
-    authViewModel: AuthViewModel,
-    userPreferenceViewModel: UserPreferenceViewModel
-): ManagedActivityResultLauncher<Intent, ActivityResult> {
-    val launcher =
-        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            authViewModel.registerByGoogle(
-                result = result,
-                context = context,
-                navController = navController,
-                userPreferenceViewModel = userPreferenceViewModel
-            )
-        }
     return launcher
 }
