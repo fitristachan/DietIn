@@ -63,4 +63,7 @@
     <string name="failed_load_bitmap">Failed to load image bitmap.</string>
     <string name="unknown_index">Maaf kami tidak dapat mendeteksi gambar, mohon ulang kembali.</string>
     <string name="open_gallery">Buka Galeri</string>
+    <string name="high_lectine">Tinggi Lektin</string>
+    <string name="ingredients">Daftar Bahan</string>
+    <string name="local">local</string>
 </resources>

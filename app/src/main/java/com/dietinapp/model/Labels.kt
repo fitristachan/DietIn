@@ -1,14 +1,10 @@
 package com.dietinapp.model
 
-
-data class Ingredient(
-    val ingredientName: String,
-    val ingredientLectineStatus: Boolean
-)
+import com.dietinapp.retrofit.response.IngredientsItem
 
 data class Recipe(
     val id: Int,
     val name: String,
     val status: Boolean,
-    val ingredients: List<Ingredient>
+    val ingredients: List<IngredientsItem>
 )

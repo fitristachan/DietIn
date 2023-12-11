@@ -1,6 +1,7 @@
 package com.dietinapp.model
 
 import android.content.Context
+import com.dietinapp.retrofit.response.IngredientsItem
 import org.json.JSONObject
 
 fun readRecipesFromJson(context: Context): List<Recipe> {
@@ -22,7 +23,7 @@ fun readRecipesFromJson(context: Context): List<Recipe> {
 
             val status: Boolean = recipeObject?.optString("status") != "low"
 
-            val ingredientsList = mutableListOf<Ingredient>()
+            val ingredientsList = mutableListOf<IngredientsItem>()
             val ingredientsArray = recipeObject?.optJSONArray("ingredients")
 
             ingredientsArray?.let { ingArray ->
@@ -32,7 +33,7 @@ fun readRecipesFromJson(context: Context): List<Recipe> {
 
                     val ingredientStatus: Boolean = ingredientObject?.optString("status") != "low"
 
-                    val ingredient = Ingredient(ingredientName, ingredientStatus)
+                    val ingredient = IngredientsItem(ingredientName, ingredientStatus)
                     ingredientsList.add(ingredient)
                 }
             }

@@ -37,34 +37,55 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import com.dietinapp.R
+import com.dietinapp.database.datastore.UserPreference
+import com.dietinapp.database.datastore.UserPreferenceViewModel
+import com.dietinapp.database.datastore.UserPreferenceViewModelFactory
+import com.dietinapp.database.datastore.dataStore
 import com.dietinapp.ui.screen.onboarding.FirstScreen
 import com.dietinapp.database.preferences.OnboardingManager
 import com.dietinapp.ui.screen.onboarding.SecondScreen
 import com.dietinapp.ui.theme.DietInTheme
 import com.google.accompanist.pager.HorizontalPagerIndicator
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class OnBoardingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val auth = FirebaseAuth.getInstance()
+
         val onboardingManager = OnboardingManager(this)
         val onboardingCompleted = onboardingManager.getData("isCompleted", false)
 
-        if (onboardingCompleted) {
-            val intent = Intent(this, AuthActivity::class.java)
-            startActivity(intent)
-            finish()
+        val pref = UserPreference.getInstance(application.dataStore)
+        val userPreferenceViewModel =
+            ViewModelProvider(
+                this,
+                UserPreferenceViewModelFactory(pref)
+            )[UserPreferenceViewModel::class.java]
 
-            //pengondisian islogin
-        } else {
-            setContent {
-                DietInTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        OnBoarding()
+        userPreferenceViewModel.getSession().observe(this) { session: Boolean? ->
+            if (session == true && auth.currentUser != null) {
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags =
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            } else if (onboardingCompleted) {
+                val intent = Intent(this, AuthActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                setContent {
+                    DietInTheme {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            OnBoarding()
+                        }
                     }
                 }
             }

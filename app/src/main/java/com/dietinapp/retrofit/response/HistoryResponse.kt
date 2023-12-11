@@ -26,7 +26,7 @@ data class Data(
 	val lectineStatus: Boolean,
 
 	@field:SerializedName("ingredients")
-	val ingredients: List<IngredientsItem>,
+	val ingredients: String,
 
 	@field:SerializedName("userId")
 	val userId: String

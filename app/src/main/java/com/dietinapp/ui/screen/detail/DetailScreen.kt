@@ -1,6 +1,7 @@
 package com.dietinapp.ui.screen.detail
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,42 +37,69 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.dietinapp.R
-import com.dietinapp.model.Ingredient
 import com.dietinapp.ui.component.IngredientCard
 import com.dietinapp.model.readRecipesFromJson
+import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
+import com.dietinapp.retrofit.response.IngredientsItem
 import com.dietinapp.utils.imageFileInGallery
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 @Composable
 fun DetailScreen(
     modifier: Modifier,
     scanId: Int,
+    historyId: String,
+    historyViewModel: HistoryViewModel,
     navigateBack: () -> Unit
 ) {
+    Log.d("HISTORY ID", historyId)
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     var foodName by remember { mutableStateOf("") }
     var foodStatus by remember { mutableStateOf("") }
-    var ingredients by remember { mutableStateOf<List<Ingredient>>(emptyList()) }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var ingredients by remember { mutableStateOf<List<IngredientsItem>>(emptyList()) }
+    var foodPhoto by remember { mutableStateOf<Uri?>(null) }
     val color =
-        if (foodStatus == "Rendah Lektin") MaterialTheme.colorScheme.primary
+        if (foodStatus == stringResource(R.string.low_lectine)) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.tertiary
 
-    val recipes = remember { readRecipesFromJson(context) }
-    val label = recipes[scanId]
-    if (label.name.isNotEmpty()){
-        foodName = label.name
-        foodStatus = if (!label.status) "Rendah Lektin" else "Tinggi Lektin"
-        ingredients = label.ingredients
-        imageUri = imageFileInGallery.value.toUri()
 
+    if (historyId == stringResource(R.string.local)) {
+        val recipes = remember { readRecipesFromJson(context) }
+        val label = recipes[scanId]
+        foodName = label.name
+        foodStatus =
+            if (!label.status) stringResource(R.string.low_lectine) else stringResource(R.string.high_lectine)
+        ingredients = label.ingredients
+        foodPhoto = imageFileInGallery.value.toUri()
     } else {
-        TODO()
+        var statusBoolean by remember { mutableStateOf(false) }
+        historyViewModel.getDetailHistory(historyId).observe(lifecycleOwner) { history ->
+            foodName = history.data.foodName
+            statusBoolean = history.data.lectineStatus
+            foodPhoto = history.data.foodPhoto.toUri()
+
+            val gson = Gson()
+            val ingredientsString = history.data.ingredients
+            try {
+                val listType = object : TypeToken<List<IngredientsItem>>() {}.type
+                val ingredientsList: List<IngredientsItem> = gson.fromJson(ingredientsString, listType)
+                ingredients = ingredientsList
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        foodStatus =
+            if (!statusBoolean) stringResource(R.string.low_lectine) else stringResource(R.string.high_lectine)
     }
 
     Box(
@@ -112,7 +140,7 @@ fun DetailScreen(
             .padding(horizontal = 16.dp),
     ) {
         AsyncImage(
-            model = imageUri ,
+            model = foodPhoto,
             contentDescription = foodName,
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -169,10 +197,10 @@ fun DetailScreen(
                 .fillMaxSize()
                 .padding(16.dp),
 
-        ) {
+            ) {
 
             Text(
-                text = "Daftar Bahan",
+                text = stringResource(R.string.ingredients),
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -189,7 +217,9 @@ fun DetailScreen(
                     IngredientCard(
                         modifier = modifier,
                         ingredientName = ingredient.ingredientName,
-                        status = if (!ingredient.ingredientLectineStatus) "Rendah Lektin" else "Tinggi Lektin"
+                        status = if (!ingredient.ingredientLectineStatus) stringResource(R.string.low_lectine) else stringResource(
+                            R.string.high_lectine
+                        )
                     )
                 }
             }

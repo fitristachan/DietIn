@@ -12,14 +12,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.dietinapp.R
+import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
 import com.dietinapp.ui.component.ArticleCard
 import com.dietinapp.ui.component.ScanCard
 import com.dietinapp.utils.capitalizeFirstLetter
@@ -40,37 +46,45 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     username: String,
     photo: String,
-    navigateToDetail: () -> Unit,
+    historyViewModel: HistoryViewModel,
+    navigateToDetail: (String) -> Unit,
     navigateToHistory: () -> Unit
-){
+) {
+    val historyList by historyViewModel.getHistoriesLimited().collectAsState()
+    LaunchedEffect(historyViewModel) {
+        historyViewModel.getHistoriesLimited()
+    }
+
     Column(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxSize()
-    ){
-        Row (
+    ) {
+        Row(
             modifier = Modifier
                 .padding(horizontal = 4.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-        ){
-            Column (
+        ) {
+            Column(
                 verticalArrangement = Arrangement.Center
             ) {
                 Spacer(modifier = Modifier.heightIn(min = 8.dp))
 
                 Text(
                     text = "Hai, ${username.capitalizeFirstLetter()}!",
-                    style = MaterialTheme.typography.headlineMedium)
-                
+                    style = MaterialTheme.typography.headlineMedium
+                )
+
                 Text(
                     text = stringResource(R.string.welcome_back),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
 
-            if (photo.isEmpty() || photo == "" || photo == "null"){
+            if (photo.isEmpty() || photo == "" || photo == "null") {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -81,7 +95,9 @@ fun HomeScreen(
                     Image(
                         painter = painterResource(R.drawable.ic_avatar),
                         contentDescription = username,
-                        modifier = Modifier.clip(shape = CircleShape).size(80.dp)
+                        modifier = Modifier
+                            .clip(shape = CircleShape)
+                            .size(80.dp)
                     )
                 }
             } else {
@@ -105,10 +121,11 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
 
-        ){
+        ) {
             Text(
                 text = stringResource(R.string.history),
-                style = MaterialTheme.typography.headlineSmall)
+                style = MaterialTheme.typography.headlineSmall
+            )
 
             TextButton(
                 onClick = { navigateToHistory() },
@@ -117,7 +134,8 @@ fun HomeScreen(
                     text = stringResource(R.string.see_more),
                     style = MaterialTheme.typography.titleSmall,
                     fontStyle = FontStyle.Italic,
-                    color = MaterialTheme.colorScheme.primary)
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
         }
 
@@ -127,15 +145,37 @@ fun HomeScreen(
             userScrollEnabled = true,
             modifier = Modifier
                 .wrapContentSize()
-        ){
-            items(count = 10) { index ->
-                ScanCard(
-                    modifier = Modifier,
-                    foodName = index.toString(),
-                    onClick = {
-                        navigateToDetail()
+        ) {
+            if (historyList.isEmpty()) {
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .fillMaxWidth()
+                            .heightIn(min = 140.dp)
+                    ) {
+                        Text(
+                            "Kamu belum pernah scan lektin:(",
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
-                )
+                }
+            } else {
+                items(items = historyList, key = { it.id }) { history ->
+                    ScanCard(
+                        modifier = Modifier,
+                        foodName = history.foodName,
+                        foodPhoto = history.foodPhoto.toUri(),
+                        foodStatus = if (!history.lectineStatus) stringResource(R.string.low_lectine)
+                        else stringResource(R.string.high_lectine),
+                        color = if (!history.lectineStatus) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.tertiary,
+                        onClick = {
+                            navigateToDetail(history.id)
+                        }
+                    )
+                }
             }
         }
 
@@ -144,10 +184,11 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .padding(horizontal = 4.dp)
-        ){
+        ) {
             Text(
                 text = stringResource(R.string.lectine_article),
-                style = MaterialTheme.typography.headlineSmall)
+                style = MaterialTheme.typography.headlineSmall
+            )
 
             Spacer(modifier = Modifier.heightIn(min = 8.dp))
 
@@ -155,8 +196,8 @@ fun HomeScreen(
                 userScrollEnabled = true,
                 modifier = Modifier
                     .fillMaxWidth()
-            ){
-                items(count = 10) {index ->
+            ) {
+                items(count = 10) { index ->
                     ArticleCard(
                         modifier = Modifier,
                         articleTitle = index.toString()

@@ -3,11 +3,14 @@ package com.dietinapp.retrofit.data.repository
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.dietinapp.model.Ingredient
 import com.dietinapp.retrofit.api.ApiService
 import com.dietinapp.retrofit.response.HistoriesResponse
+import com.dietinapp.retrofit.response.HistoryItem
 import com.dietinapp.retrofit.response.HistoryResponse
+import com.dietinapp.retrofit.response.IngredientsItem
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -21,8 +24,8 @@ import java.io.File
 class HistoryRepository private constructor(
     private val apiService: ApiService
 ){
-    private val _historiesResponse = MutableLiveData<HistoriesResponse>()
-    private val historiesResponse: LiveData<HistoriesResponse> = _historiesResponse
+    private val _historiesResponse = MutableStateFlow<List<HistoryItem>>(emptyList())
+    private val historiesResponse: StateFlow<List<HistoryItem>> = _historiesResponse
 
     private val _historyResponse = MutableLiveData<HistoryResponse>()
     private val historyResponse: LiveData<HistoryResponse> = _historyResponse
@@ -40,7 +43,7 @@ class HistoryRepository private constructor(
         foodPhoto: File,
         foodName: String,
         lectineStatus: Boolean,
-        ingredients: List<Ingredient>,
+        ingredients: List<IngredientsItem>,
     ): LiveData<HistoryResponse>{
         _isLoading.value = true
         _errorMessage.value = ""
@@ -86,7 +89,7 @@ class HistoryRepository private constructor(
         return historyResponse
     }
 
-    fun getHistoriesLimited(): LiveData<HistoriesResponse>{
+    fun getHistoriesLimited(): StateFlow<List<HistoryItem>>{
         _isLoading.value = true
         _errorMessage.value = ""
         _successMessage.value = ""
@@ -100,7 +103,7 @@ class HistoryRepository private constructor(
             ) {
                 _isLoading.value = false
                 if (response.isSuccessful) {
-                    _historiesResponse.value = response.body()
+                    _historiesResponse.value = response.body()!!.datas.sortedByDescending { it.createdAt }
                     _successMessage.value = response.message().toString()
                 } else {
                     _errorMessage.value = response.message().toString()
@@ -127,6 +130,29 @@ class HistoryRepository private constructor(
         _successMessage.value = ""
 
         val client = apiService.getDetailHistory(historyId)
+
+        client.enqueue(object: Callback<HistoryResponse> {
+            override fun onResponse(
+                call: Call<HistoryResponse>,
+                response: Response<HistoryResponse>
+            ) {
+                _isLoading.value = false
+                if (response.isSuccessful) {
+                    _historyResponse.value = response.body()
+                    _successMessage.value = response.message().toString()
+                } else {
+                    _errorMessage.value = response.message().toString()
+                }
+            }
+
+            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+                _isLoading.value = false
+                val errorResponse = t.message
+                _errorMessage.value = errorResponse.toString()
+                Log.e("Detail History Repo", "onFailure: $errorResponse")
+            }
+
+        })
 
         return historyResponse
     }

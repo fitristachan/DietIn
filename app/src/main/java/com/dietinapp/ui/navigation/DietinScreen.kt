@@ -6,8 +6,8 @@ sealed class DietinScreen (val route: String) {
     object Scan : DietinScreen("ic_scan")
     object Profile : DietinScreen("profile")
     object History: DietinScreen("history")
-    object Detail : DietinScreen("home/{scanId}") {
-        fun createRoute(scanId: Int): String = "home/$scanId"
+    object Detail : DietinScreen("home/{scanId}{historyId}") {
+        fun createRoute(scanId: Int, historyId: String): String = "home/$scanId$historyId"
     }
 
 }

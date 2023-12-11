@@ -153,6 +153,7 @@ fun ScanScreen(
                     launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                     isLoading = true
                 },
+                enabled = !isLoading,
                 shape = CircleShape,
                 contentPadding = PaddingValues(16.dp),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondary),

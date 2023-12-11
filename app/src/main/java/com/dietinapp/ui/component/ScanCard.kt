@@ -1,6 +1,6 @@
 package com.dietinapp.ui.component
 
-import androidx.compose.foundation.Image
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,17 +26,19 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.dietinapp.R
 
 @Composable
 fun ScanCard(
     modifier: Modifier,
     foodName: String,
+    foodPhoto: Uri,
+    foodStatus: String,
+    color: Color,
     onClick: () -> Unit
 ) {
     Card(
@@ -55,12 +57,12 @@ fun ScanCard(
                 .widthIn(min = 220.dp)
                 .heightIn(min = 283.dp),
         ) {
-            Image(
-                painter = painterResource(R.drawable.dummy_photo),
+            AsyncImage(
+                model = foodPhoto,
                 contentDescription = foodName,
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = Color.Black.copy(alpha = 0.5f),
                     blendMode = BlendMode.Multiply),
                 modifier = Modifier.matchParentSize()
             )
@@ -80,13 +82,13 @@ fun ScanCard(
                         modifier = Modifier
                             .sizeIn(minWidth = 110.dp, minHeight = 35.dp)
                             .background(
-                                MaterialTheme.colorScheme.primary,
+                                color,
                                 RoundedCornerShape(20.dp)
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = stringResource(R.string.low_lectine),
+                            text = foodStatus,
                             style = MaterialTheme.typography.labelSmall,
                             maxLines = 2,
                             textAlign = TextAlign.Center,
@@ -101,7 +103,7 @@ fun ScanCard(
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        text = "Bettriot Queona Salad Orange Ginger Dressing",
+                        text = foodName,
                         style = MaterialTheme.typography.titleMedium,
                         maxLines = 2,
                         textAlign = TextAlign.Start,
@@ -113,10 +115,4 @@ fun ScanCard(
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun ScanCardPreview() {
-    ScanCard(modifier = Modifier, onClick = {}, foodName = "dummy")
 }

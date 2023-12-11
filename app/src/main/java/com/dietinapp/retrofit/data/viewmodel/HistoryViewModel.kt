@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.dietinapp.model.Ingredient
 import com.dietinapp.retrofit.data.di.HistoryInjection
 import com.dietinapp.retrofit.data.repository.HistoryRepository
+import com.dietinapp.retrofit.response.IngredientsItem
 import java.io.File
 
 class HistoryViewModel(
@@ -16,17 +16,19 @@ class HistoryViewModel(
     val errorMessage: LiveData<String> = historyRepository.errorMessage
     val isLoading: LiveData<Boolean> = historyRepository.isLoading
 
+
     fun addHistory(
         foodPhoto: File,
         foodName: String,
         lectineStatus: Boolean,
-        ingredients: List<Ingredient>,
+        ingredients: List<IngredientsItem>,
     ) = historyRepository.addHistory(foodPhoto, foodName, lectineStatus, ingredients)
 
+    fun getHistoriesLimited() = historyRepository.getHistoriesLimited()
 
-    fun getHistoriesLimited(){
+    fun getDetailHistory(historyId: String) = historyRepository.getDetailHistory(historyId)
 
-    }
+
 }
 
 

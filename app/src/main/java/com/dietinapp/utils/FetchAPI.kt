@@ -5,10 +5,10 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
-import com.dietinapp.model.Ingredient
 import com.dietinapp.model.processImage
 import com.dietinapp.model.readRecipesFromJson
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
+import com.dietinapp.retrofit.response.IngredientsItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ fun processAndFetch(
             val foodName = recipes[result].name
             val lectineStatus = recipes[result].status
 
-            val ingredients: List<Ingredient> = recipes[result].ingredients
+            val ingredients: List<IngredientsItem> = recipes[result].ingredients
 
             val foodPhoto = uriToFile(imageUri, context).reduceFileImage()
             imageFileInGallery.value = imageUri.toString()
@@ -63,7 +63,7 @@ fun processAndFetchCamera(
         val foodName = recipes[result].name
         val lectineStatus = recipes[result].status
 
-        val ingredients: List<Ingredient> = recipes[result].ingredients
+        val ingredients: List<IngredientsItem> = recipes[result].ingredients
 
         saveToGallery(context, imageUri) { file ->
             val foodPhoto = file!!.reduceFileImage()

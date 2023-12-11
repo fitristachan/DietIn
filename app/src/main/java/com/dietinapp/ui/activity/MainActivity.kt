@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -29,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.dietinapp.R
 import com.dietinapp.database.datastore.UserPreference
 import com.dietinapp.database.datastore.UserPreferenceViewModel
 import com.dietinapp.database.datastore.UserPreferenceViewModelFactory
@@ -143,11 +145,13 @@ fun DietinApp(
                 HomeScreen(
                     username = username,
                     photo = photo,
+                    historyViewModel = historyViewModel,
                     navigateToHistory = {
                         navController.navigate(DietinScreen.History.route)
                     },
                     navigateToDetail = {
-
+                        val route = DietinScreen.Detail.createRoute(scanId = 0, it)
+                        navController.navigate(route)
                     }
                 )
             }
@@ -179,7 +183,7 @@ fun DietinApp(
                 ScanScreen(
                     historyViewModel = historyViewModel,
                     navigateToDetail = {
-                        val route = DietinScreen.Detail.createRoute(it)
+                        val route = DietinScreen.Detail.createRoute(it, "local")
                         navController.navigate(route)
                     }
                 )
@@ -192,13 +196,17 @@ fun DietinApp(
             composable(
                 route = DietinScreen.Detail.route,
                 arguments = listOf(
-                    navArgument("scanId") { type = NavType.IntType }
+                    navArgument("scanId") { type = NavType.IntType },
+                    navArgument("historyId") { type = NavType.StringType }
                 )
             ) {
-                val id = it.arguments?.getInt("scanId") ?: 0
+                val scanId = it.arguments?.getInt("scanId") ?: 0
+                val historyId = it.arguments?.getString("historyId") ?: stringResource(R.string.local)
                 DetailScreen(
                     modifier,
-                    scanId = id,
+                    scanId = scanId,
+                    historyId = historyId,
+                    historyViewModel = historyViewModel,
                     navigateBack = {
                         navController.navigateUp()
                     }
