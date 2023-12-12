@@ -66,4 +66,8 @@
     <string name="high_lectine">Tinggi Lektin</string>
     <string name="ingredients">Daftar Bahan</string>
     <string name="local">local</string>
+    <string name="try_again_message">Coba Lagi</string>
+    <string name="never_scan_message">Kamu belum pernah scan lektin:(</string>
+    <string name="back_button">Tombol Kembali</string>
+    <string name="scan_instruction">Scan makanan dalam lingkaran</string>
 </resources>

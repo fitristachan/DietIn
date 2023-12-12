@@ -1,20 +1,22 @@
 package com.dietinapp.retrofit.data.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.dietinapp.retrofit.data.di.HistoryInjection
 import com.dietinapp.retrofit.data.repository.HistoryRepository
 import com.dietinapp.retrofit.response.IngredientsItem
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.io.File
 
 class HistoryViewModel(
     private val historyRepository: HistoryRepository
 ): ViewModel() {
-    val successMessage: LiveData<String> = historyRepository.successMessage
-    val errorMessage: LiveData<String> = historyRepository.errorMessage
-    val isLoading: LiveData<Boolean> = historyRepository.isLoading
+    val successMessage: StateFlow<String> = historyRepository.successMessage
+    val errorMessage: StateFlow<String> = historyRepository.errorMessage
+    val isLoading: StateFlow<Boolean> = historyRepository.isLoading
 
 
     fun addHistory(
@@ -22,7 +24,7 @@ class HistoryViewModel(
         foodName: String,
         lectineStatus: Boolean,
         ingredients: List<IngredientsItem>,
-    ) = historyRepository.addHistory(foodPhoto, foodName, lectineStatus, ingredients)
+    ) = viewModelScope.launch { historyRepository.addHistory(foodPhoto, foodName, lectineStatus, ingredients) }
 
     fun getHistoriesLimited() = historyRepository.getHistoriesLimited()
 

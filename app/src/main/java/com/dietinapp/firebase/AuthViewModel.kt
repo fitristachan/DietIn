@@ -11,6 +11,8 @@ import com.dietinapp.database.datastore.UserPreferenceViewModel
 import com.dietinapp.ui.navigation.AuthScreen
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlin.coroutines.CoroutineContext
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -159,49 +161,62 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     fun tokenValidationCheck(
         userPreferenceViewModel: UserPreferenceViewModel,
-        auth: FirebaseAuth
+        onSignOutComplete: (String) -> Unit,
     ) {
-        auth.currentUser?.getIdToken(true)
+        FirebaseAuth.getInstance().currentUser?.getIdToken(true)
             ?.addOnSuccessListener {
-                if (it.token.toString() != userPreferenceViewModel.getToken().value) {
-                    userPreferenceViewModel.reloadToken(it.token.toString())
+                userPreferenceViewModel.reloadToken(it.token.toString())
+            }
+            ?.addOnFailureListener { exception ->
+                when (exception) {
+                    is FirebaseAuthInvalidCredentialsException,
+                    is FirebaseAuthInvalidUserException -> {
+                        signOut(
+                            userPreferenceViewModel = userPreferenceViewModel,
+                            onSignOutComplete = {
+                                onSignOutComplete(exception.localizedMessage!!.toString())
+                            }
+                        )
+                    }
+
+                    else -> {
+                        // Handle other failure scenarios
+                        onSignOutComplete(exception.localizedMessage ?: "Unknown error")
+                    }
                 }
             }
-            ?.addOnFailureListener {
-
-            }
     }
 
 
-    fun signOut(
-        userPreferenceViewModel: UserPreferenceViewModel,
-        onSignOutComplete: () -> Unit
-    ) {
-        _isLoading.value = true
-        authRepository.signOut(
-            userPreferenceViewModel,
-            onSignOutComplete
-        )
-        _isLoading.value = false
-    }
-}
-
-class AuthViewModelFactory private constructor(private val authRepository: AuthRepository) :
-    ViewModelProvider.NewInstanceFactory() {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
-            return AuthViewModel(authRepository) as T
+        fun signOut(
+            userPreferenceViewModel: UserPreferenceViewModel,
+            onSignOutComplete: () -> Unit
+        ) {
+            _isLoading.value = true
+            authRepository.signOut(
+                userPreferenceViewModel,
+                onSignOutComplete
+            )
+            _isLoading.value = false
         }
-        throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }
 
-    companion object {
-        @Volatile
-        private var instance: AuthViewModelFactory? = null
-        fun getInstance(context: Context): AuthViewModelFactory =
-            instance ?: synchronized(this) {
-                instance ?: AuthViewModelFactory(AuthInjection.provideRepository(context))
-            }.also { instance = it }
+    class AuthViewModelFactory private constructor(private val authRepository: AuthRepository) :
+        ViewModelProvider.NewInstanceFactory() {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+                return AuthViewModel(authRepository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
+        }
+
+        companion object {
+            @Volatile
+            private var instance: AuthViewModelFactory? = null
+            fun getInstance(context: Context): AuthViewModelFactory =
+                instance ?: synchronized(this) {
+                    instance ?: AuthViewModelFactory(AuthInjection.provideRepository(context))
+                }.also { instance = it }
+        }
     }
-}

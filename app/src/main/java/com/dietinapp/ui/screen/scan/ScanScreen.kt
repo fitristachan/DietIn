@@ -14,15 +14,25 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCase
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -41,6 +51,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -148,6 +160,57 @@ fun ScanScreen(
                 lifecycleOwner = lifecycleOwner
             )
 
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+            ) {
+                val flashAnimation by rememberInfiniteTransition(label = "").animateFloat(
+                    initialValue = 0.6f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        tween(5000, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ), label = ""
+                )
+
+                val beatAnimation by rememberInfiniteTransition(label = "").animateFloat(
+                    initialValue = 0.8f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        tween(5000),
+                        repeatMode = RepeatMode.Reverse
+                    ), label = ""
+                )
+
+                Text(
+                    text = stringResource(id = R.string.scan_instruction),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(flashAnimation),
+                    modifier = Modifier.scale(beatAnimation)
+                )
+
+                Spacer(
+                    modifier = Modifier
+                        .height(32.dp)
+                        .fillMaxWidth()
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .clip(CircleShape)
+                        .border(5.dp, Color.White, CircleShape)
+                        .background(Color.Transparent)
+                ) {
+
+                }
+            }
+
+
             Button(
                 onClick = {
                     launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -176,9 +239,9 @@ fun ScanScreen(
                     .padding(vertical = 32.dp)
                     .align(Alignment.BottomCenter),
                 shape = CircleShape,
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.background),
                 contentPadding = PaddingValues(if (isPressed) 8.dp else 12.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.background),
                 onClick = { /* GNDN */ },
                 enabled = false
             ) {
@@ -187,7 +250,7 @@ fun ScanScreen(
                         .size(80.dp),
                     shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isPressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+                        containerColor = if (isPressed) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primary
                     ),
                     interactionSource = interactionSource,
                     enabled = !isLoading,

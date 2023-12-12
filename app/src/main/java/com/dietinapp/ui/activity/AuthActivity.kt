@@ -65,8 +65,6 @@ class AuthActivity : ComponentActivity() {
                 UserPreferenceViewModelFactory(pref)
             )[UserPreferenceViewModel::class.java]
 
-        authViewModel.tokenValidationCheck(userPreferenceViewModel, auth)
-
         userPreferenceViewModel.getSession().observe(this) { session: Boolean? ->
             if (session == true && auth.currentUser != null) {
                 val intent = Intent(this, MainActivity::class.java)

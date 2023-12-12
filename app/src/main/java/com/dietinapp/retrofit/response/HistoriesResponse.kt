@@ -1,5 +1,7 @@
 package com.dietinapp.retrofit.response
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class HistoriesResponse(
@@ -14,6 +16,8 @@ data class HistoriesResponse(
 	val status: Int
 )
 
+
+@Entity(tableName = "histories")
 data class HistoryItem(
 
 	@field:SerializedName("createdAt")
@@ -28,6 +32,7 @@ data class HistoryItem(
 	@field:SerializedName("lectineStatus")
 	val lectineStatus: Boolean,
 
+	@PrimaryKey
 	@field:SerializedName("id")
 	val id: String
 )

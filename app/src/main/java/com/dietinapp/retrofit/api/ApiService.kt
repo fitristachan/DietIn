@@ -15,7 +15,8 @@ import retrofit2.http.Query
 interface ApiService {
     @GET("history")
     suspend fun getHistories(
-        @Query("page") page: Int = 1, @Query("size") size: Int = 20
+        @Query("page") page: Int = 1,
+        @Query("size") size: Int = 10
     ): HistoriesResponse
 
     @GET("history")

@@ -36,19 +36,19 @@ fun processAndFetch(
 
             Log.d("Image File", "showImage: ${foodPhoto.path}")
 
+            historyViewModel.addHistory(
+                foodPhoto = foodPhoto,
+                foodName = foodName,
+                lectineStatus = lectineStatus,
+                ingredients = ingredients
+            )
             CoroutineScope(Dispatchers.Main).launch {
-                historyViewModel.addHistory(
-                    foodPhoto = foodPhoto,
-                    foodName = foodName,
-                    lectineStatus = lectineStatus,
-                    ingredients = ingredients
-                )
-
                 onProcessAdditional()
                 navigateToDetail(result)
             }
         }
     }
+
 }
 
 fun processAndFetchCamera(

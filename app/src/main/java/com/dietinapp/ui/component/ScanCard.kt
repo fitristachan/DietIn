@@ -26,11 +26,9 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.dietinapp.R
 
 @Composable
 fun ScanCard(
@@ -45,7 +43,7 @@ fun ScanCard(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         modifier = Modifier
-            .padding(horizontal = 8.dp)
+            .padding(8.dp)
             .widthIn(min = 220.dp)
             .heightIn(min = 283.dp)
             .clickable {
@@ -62,7 +60,7 @@ fun ScanCard(
                 contentDescription = foodName,
                 contentScale = ContentScale.Crop,
                 colorFilter = ColorFilter.tint(
-                    color = Color.Black.copy(alpha = 0.5f),
+                    color = Color.Black.copy(alpha = 0.4f),
                     blendMode = BlendMode.Multiply),
                 modifier = Modifier.matchParentSize()
             )

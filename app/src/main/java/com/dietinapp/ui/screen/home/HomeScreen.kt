@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -54,6 +53,8 @@ fun HomeScreen(
     LaunchedEffect(historyViewModel) {
         historyViewModel.getHistoriesLimited()
     }
+
+    val isLoading by historyViewModel.isLoading.collectAsState()
 
     Column(
         modifier = Modifier
@@ -156,13 +157,13 @@ fun HomeScreen(
                             .heightIn(min = 140.dp)
                     ) {
                         Text(
-                            "Kamu belum pernah scan lektin:(",
+                            stringResource(R.string.never_scan_message),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
             } else {
-                items(items = historyList, key = { it.id }) { history ->
+                items(items = historyList.take(5), key = { it.id }) { history ->
                     ScanCard(
                         modifier = Modifier,
                         foodName = history.foodName,
@@ -205,7 +206,8 @@ fun HomeScreen(
                 }
             }
         }
-
     }
-
+//    if (isLoading) {
+//        LoadingScreen()
+//    }
 }

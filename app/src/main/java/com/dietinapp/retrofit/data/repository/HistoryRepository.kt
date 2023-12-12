@@ -30,63 +30,62 @@ class HistoryRepository private constructor(
     private val _historyResponse = MutableLiveData<HistoryResponse>()
     private val historyResponse: LiveData<HistoryResponse> = _historyResponse
 
-    private val _successMessage = MutableLiveData<String>()
-    val successMessage: LiveData<String> = _successMessage
+    private val _successMessage = MutableStateFlow<String>("")
+    val successMessage: StateFlow<String> = _successMessage
 
-    private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> = _errorMessage
+    private val _errorMessage = MutableStateFlow<String>("")
+    val errorMessage: StateFlow<String> = _errorMessage
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+    private val _isLoading = MutableStateFlow<Boolean>(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     fun addHistory(
         foodPhoto: File,
         foodName: String,
         lectineStatus: Boolean,
         ingredients: List<IngredientsItem>,
-    ): LiveData<HistoryResponse>{
+    ){
         _isLoading.value = true
         _errorMessage.value = ""
         _successMessage.value = ""
 
-        val requestFoodName = foodName.toRequestBody("text/plain".toMediaTypeOrNull())
+            val requestFoodName = foodName.toRequestBody("text/plain".toMediaTypeOrNull())
 
-        val gson = Gson()
-        val json = gson.toJson(ingredients)
-        val requestIngredients = json.toRequestBody("application/json".toMediaType())
+            val gson = Gson()
+            val json = gson.toJson(ingredients)
+            val requestIngredients = json.toRequestBody("application/json".toMediaType())
 
-        val imageFile = foodPhoto.asRequestBody("image/jpeg".toMediaType())
-        val requestFoodPhoto = MultipartBody.Part.createFormData(
-            "image",
-            foodPhoto.name,
-            imageFile)
+            val imageFile = foodPhoto.asRequestBody("image/jpeg".toMediaType())
+            val requestFoodPhoto = MultipartBody.Part.createFormData(
+                "image",
+                foodPhoto.name,
+                imageFile)
 
-        val client = apiService.addHistory(requestFoodPhoto, requestFoodName, lectineStatus, requestIngredients)
+            val client =  apiService.addHistory(requestFoodPhoto, requestFoodName, lectineStatus, requestIngredients)
 
-        client.enqueue(object: Callback<HistoryResponse> {
-            override fun onResponse(
-                call: Call<HistoryResponse>,
-                response: Response<HistoryResponse>
-            ) {
-                _isLoading.value = false
-                if (response.isSuccessful) {
-                    _historyResponse.value = response.body()
-                    _successMessage.value = response.message().toString()
-                } else {
-                    _errorMessage.value = response.message().toString()
+            client.enqueue(object: Callback<HistoryResponse> {
+                override fun onResponse(
+                    call: Call<HistoryResponse>,
+                    response: Response<HistoryResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        _isLoading.value = false
+                        _successMessage.value = response.message().toString()
+                    } else {
+                        _isLoading.value = false
+                        _errorMessage.value = response.message().toString()
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                _isLoading.value = false
-                val errorResponse = t.message
-                _errorMessage.value = errorResponse.toString()
-                Log.e("Add History Repo", "onFailure: $errorResponse")
-            }
+                override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+                    _isLoading.value = false
+                    val errorResponse = t.message
+                    _errorMessage.value = errorResponse.toString()
+                    Log.e("Add History Repo", "onFailure: $errorResponse")
+                }
 
-        })
+            })
 
-        return historyResponse
     }
 
     fun getHistoriesLimited(): StateFlow<List<HistoryItem>>{

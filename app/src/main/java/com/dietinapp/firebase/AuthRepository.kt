@@ -75,13 +75,13 @@ class AuthRepository private constructor(
                             if (profileUpdateTask.isSuccessful) {
                                 onAuthComplete()
                             } else {
-                                onAuthError(profileUpdateTask.exception?.message)
+                                onAuthError(profileUpdateTask.exception?.localizedMessage)
                             }
                         }
 
                 } else {
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    onAuthError(task.exception?.message)
+                    onAuthError(task.exception?.localizedMessage)
                 }
             }
     }
@@ -115,15 +115,15 @@ class AuthRepository private constructor(
                                         if (profileUpdateTask.isSuccessful) {
                                             onAuthComplete()
                                         } else {
-                                            onAuthError(profileUpdateTask.exception?.message)
+                                            onAuthError(profileUpdateTask.exception?.localizedMessage)
                                         }
                                     }
                             } else {
-                                onAuthError(passwordUpdateTask.exception?.message)
+                                onAuthError(passwordUpdateTask.exception?.localizedMessage)
                             }
                         }
                 } else {
-                    onAuthError(signInTask.exception?.message)
+                    onAuthError(signInTask.exception?.localizedMessage)
                 }
             }
     }
@@ -142,7 +142,7 @@ class AuthRepository private constructor(
                     val authResult = signInTask.result
                     onAuthComplete(authResult)
                 } else {
-                    onAuthError(signInTask.exception?.message)
+                    onAuthError(signInTask.exception?.localizedMessage)
                 }
             }
     }

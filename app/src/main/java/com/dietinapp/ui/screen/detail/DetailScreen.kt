@@ -1,10 +1,7 @@
 package com.dietinapp.ui.screen.detail
 
 import android.net.Uri
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,9 +21,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +48,7 @@ import com.dietinapp.ui.component.IngredientCard
 import com.dietinapp.model.readRecipesFromJson
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
 import com.dietinapp.retrofit.response.IngredientsItem
+import com.dietinapp.ui.component.LoadingScreen
 import com.dietinapp.utils.imageFileInGallery
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -60,7 +61,6 @@ fun DetailScreen(
     historyViewModel: HistoryViewModel,
     navigateBack: () -> Unit
 ) {
-    Log.d("HISTORY ID", historyId)
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -71,6 +71,7 @@ fun DetailScreen(
     val color =
         if (foodStatus == stringResource(R.string.low_lectine)) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.tertiary
+    var isLoading by remember { mutableStateOf(false) }
 
 
     if (historyId == stringResource(R.string.local)) {
@@ -81,7 +82,9 @@ fun DetailScreen(
             if (!label.status) stringResource(R.string.low_lectine) else stringResource(R.string.high_lectine)
         ingredients = label.ingredients
         foodPhoto = imageFileInGallery.value.toUri()
-    } else {
+    } else if (historyId != stringResource(R.string.local)) {
+        isLoading = historyViewModel.isLoading.collectAsState().value
+
         var statusBoolean by remember { mutableStateOf(false) }
         historyViewModel.getDetailHistory(historyId).observe(lifecycleOwner) { history ->
             foodName = history.data.foodName
@@ -94,8 +97,10 @@ fun DetailScreen(
                 val listType = object : TypeToken<List<IngredientsItem>>() {}.type
                 val ingredientsList: List<IngredientsItem> = gson.fromJson(ingredientsString, listType)
                 ingredients = ingredientsList
+                isLoading = false
             } catch (e: Exception) {
                 e.printStackTrace()
+                isLoading = false
             }
         }
         foodStatus =
@@ -120,15 +125,14 @@ fun DetailScreen(
             horizontalArrangement = Arrangement.Start
         ) {
             //back button
-            Image(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = foodName,
-                modifier = Modifier
-                    .size(35.dp)
-                    .clickable {
-                        navigateBack()
-                    }
-            )
+            IconButton(
+                onClick = { navigateBack() },
+                modifier = Modifier.size(35.dp)
+            ){
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button))
+            }
         }
     }
 
@@ -224,5 +228,8 @@ fun DetailScreen(
                 }
             }
         }
+    }
+    if (isLoading){
+        LoadingScreen()
     }
 }

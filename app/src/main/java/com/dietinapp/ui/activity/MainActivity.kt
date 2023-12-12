@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import com.dietinapp.ui.screen.scan.ScanScreen
 import com.dietinapp.ui.theme.DietInTheme
 import com.dietinapp.ui.component.BottomBar
 import com.dietinapp.ui.screen.history.HistoryScreen
+import com.dietinapp.utils.errorDialog
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -73,12 +75,6 @@ class MainActivity : ComponentActivity() {
             )[UserPreferenceViewModel::class.java]
 
 
-        userPreferenceViewModel.getSession().observe(this) { session: Boolean? ->
-            if (session == true && auth.currentUser != null) {
-                authViewModel.tokenValidationCheck(userPreferenceViewModel, auth)
-            }
-        }
-
         setContent {
             DietInTheme {
                 // A surface container using the 'background' color from the theme
@@ -89,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     DietinApp(
                         historyViewModel = historyViewModel,
                         authViewModel = authViewModel,
-                        userPreferenceViewModel = userPreferenceViewModel
+                        userPreferenceViewModel = userPreferenceViewModel,
                     )
                 }
             }
@@ -111,6 +107,16 @@ fun DietinApp(
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    var sessionEndMessage by remember { mutableStateOf("") }
+
+    LaunchedEffect(authViewModel){
+        authViewModel.tokenValidationCheck(
+            userPreferenceViewModel = userPreferenceViewModel,
+            onSignOutComplete = {sessionEndMessage = it}
+        )
+    }
+
+
     var username by remember { mutableStateOf("") }
     userPreferenceViewModel.getUsername().observe(lifecycleOwner) {
         username = it.toString()
@@ -124,6 +130,11 @@ fun DietinApp(
     var photo by remember { mutableStateOf("") }
     userPreferenceViewModel.getPhoto().observe(lifecycleOwner) {
         photo = it.toString()
+    }
+
+    var showDialog by remember { mutableStateOf(false) }
+    if (sessionEndMessage.isNotEmpty()){
+        showDialog = true
     }
 
     Scaffold(
@@ -154,6 +165,21 @@ fun DietinApp(
                         navController.navigate(route)
                     }
                 )
+                errorDialog(
+                    showDialog = showDialog,
+                    errorMsg = sessionEndMessage,
+                    onDismiss =
+                    {
+                        showDialog = false
+                        context.findActivity()?.finish()
+                        context.startActivity(
+                            Intent(
+                                context,
+                                AuthActivity::class.java
+                            )
+                        )
+                    }
+                )
             }
             composable(DietinScreen.Profile.route) {
                 ProfileScreen(
@@ -178,6 +204,21 @@ fun DietinApp(
                         navController.navigate(DietinScreen.History.route)
                     }
                 )
+                errorDialog(
+                    showDialog = showDialog,
+                    errorMsg = sessionEndMessage,
+                    onDismiss =
+                    {
+                        showDialog = false
+                        context.findActivity()?.finish()
+                        context.startActivity(
+                            Intent(
+                                context,
+                                AuthActivity::class.java
+                            )
+                        )
+                    }
+                )
             }
             composable(DietinScreen.Scan.route) {
                 ScanScreen(
@@ -190,7 +231,14 @@ fun DietinApp(
             }
             composable(DietinScreen.History.route) {
                 HistoryScreen(
-                    modifier = Modifier
+                    modifier = Modifier,
+                    navigateToDetail = {
+                        val route = DietinScreen.Detail.createRoute(scanId = 0, it)
+                        navController.navigate(route)
+                    },
+                    navigateBack = {
+                        navController.navigateUp()
+                    }
                 )
             }
             composable(
