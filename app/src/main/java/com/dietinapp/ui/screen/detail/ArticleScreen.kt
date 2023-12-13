@@ -58,7 +58,7 @@ fun ArticleScreen(
             }
             Text(
                 text = stringResource(R.string.article_read),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
