@@ -67,7 +67,12 @@
     <string name="ingredients">Daftar Bahan</string>
     <string name="local">local</string>
     <string name="try_again_message">Coba Lagi</string>
-    <string name="never_scan_message">Kamu belum pernah scan lektin:(</string>
+    <string name="never_scan_message">Kamu belum pernah scan, ayo scan dulu:(</string>
     <string name="back_button">Tombol Kembali</string>
     <string name="scan_instruction">Scan makanan dalam lingkaran</string>
+    <string name="search_placeholder">Cari nama makanan</string>
+    <string name="article_read">Tentang Lektin</string>
+    <string name="filter_all">Semua</string>
+    <string name="filter_month">Bulan ini</string>
+    <string name="filter_year">Tahun ini</string>
 </resources>

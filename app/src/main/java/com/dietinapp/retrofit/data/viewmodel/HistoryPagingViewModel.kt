@@ -14,8 +14,9 @@ import kotlinx.coroutines.flow.Flow
 class HistoryPagingViewModel(
     private val historiesPagingRepository: HistoriesPagingRepository
 ): ViewModel() {
-    fun getHistories(): Flow<PagingData<HistoryItem>> {
-        return historiesPagingRepository.getHistories()
+    fun getHistories(foodName: String, createdAt: String): Flow<PagingData<HistoryItem>> {
+        return historiesPagingRepository.getHistories(
+            foodName = foodName, createdAt = createdAt)
             .cachedIn(viewModelScope)
     }
 }

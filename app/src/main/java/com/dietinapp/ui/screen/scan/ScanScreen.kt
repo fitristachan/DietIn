@@ -22,7 +22,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -63,6 +62,7 @@ import com.dietinapp.R
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
 import com.dietinapp.ui.component.CameraPreview
 import com.dietinapp.ui.component.LoadingScreen
+import com.dietinapp.ui.component.dashedBorder
 import com.dietinapp.utils.Permission
 import com.dietinapp.utils.createCustomTempFile
 import com.dietinapp.ui.component.executor
@@ -163,6 +163,7 @@ fun ScanScreen(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .padding(bottom = 42.dp)
                     .align(Alignment.Center)
                     .fillMaxWidth()
             ) {
@@ -193,7 +194,7 @@ fun ScanScreen(
 
                 Spacer(
                     modifier = Modifier
-                        .height(32.dp)
+                        .height(42.dp)
                         .fillMaxWidth()
                 )
 
@@ -203,13 +204,14 @@ fun ScanScreen(
                     modifier = Modifier
                         .size(300.dp)
                         .clip(CircleShape)
-                        .border(5.dp, Color.White, CircleShape)
+                        .dashedBorder(
+                            color = Color.White,
+                            shape = CircleShape
+                        )
                         .background(Color.Transparent)
                 ) {
-
                 }
             }
-
 
             Button(
                 onClick = {

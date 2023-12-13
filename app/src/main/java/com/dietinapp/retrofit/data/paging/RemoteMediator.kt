@@ -10,9 +10,11 @@ import com.dietinapp.retrofit.response.HistoryItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+
 @OptIn(ExperimentalPagingApi::class)
 class HistoriesRemoteMediator(
-    private val database: HistoriesPagingDatabase, private val apiService: ApiService
+    private val database: HistoriesPagingDatabase,
+    private val apiService: ApiService,
 ) : RemoteMediator<Int, HistoryItem>() {
 
     override suspend fun initialize(): InitializeAction {
@@ -48,6 +50,8 @@ class HistoriesRemoteMediator(
         try {
             val responseData = apiService.getHistories(page, state.config.pageSize).datas
                 .sortedByDescending { it.createdAt }
+//                .filter { it.foodName.contains(filter) }
+//                .groupBy { it.createdAt[0] }
             val endOfPaginationReached = responseData.isEmpty()
 
             database.withTransaction {
@@ -57,9 +61,13 @@ class HistoriesRemoteMediator(
                 }
                 val prevKey = if (page == 1) null else page - 1
                 val nextKey = if (endOfPaginationReached) null else page + 1
-                val keys = responseData.map {
+                val keys = responseData.map{
                     RemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
+//                var keys: List<RemoteKeys> = emptyList()
+//                responseData.map { map ->
+//                    keys = map.value.map {  RemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey) }
+//                }
                 database.remoteKeysDao().insertAll(keys)
                 database.historiesPagingDao().insertHistories(responseData)
             }

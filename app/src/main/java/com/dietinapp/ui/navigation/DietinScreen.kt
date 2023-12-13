@@ -9,5 +9,8 @@ sealed class DietinScreen (val route: String) {
     object Detail : DietinScreen("home/{scanId}{historyId}") {
         fun createRoute(scanId: Int, historyId: String): String = "home/$scanId$historyId"
     }
+    object Article : DietinScreen("home/{articleId}") {
+        fun createRoute(articleId: Int): String = "home/$articleId"
+    }
 
 }

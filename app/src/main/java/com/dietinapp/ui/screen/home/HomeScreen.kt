@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -24,10 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -35,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.dietinapp.R
+import com.dietinapp.article.readArticleFromJson
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
 import com.dietinapp.ui.component.ArticleCard
 import com.dietinapp.ui.component.ScanCard
@@ -47,14 +52,13 @@ fun HomeScreen(
     photo: String,
     historyViewModel: HistoryViewModel,
     navigateToDetail: (String) -> Unit,
-    navigateToHistory: () -> Unit
+    navigateToHistory: () -> Unit,
+    navigateToArticle: (Int) -> Unit,
 ) {
     val historyList by historyViewModel.getHistoriesLimited().collectAsState()
     LaunchedEffect(historyViewModel) {
         historyViewModel.getHistoriesLimited()
     }
-
-    val isLoading by historyViewModel.isLoading.collectAsState()
 
     Column(
         modifier = Modifier
@@ -150,15 +154,27 @@ fun HomeScreen(
             if (historyList.isEmpty()) {
                 item {
                     Row(
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .padding(horizontal = 8.dp)
                             .fillMaxWidth()
-                            .heightIn(min = 140.dp)
+                            .wrapContentHeight()
                     ) {
+                        Image(
+                            painter = painterResource(R.drawable.onboarding_first),
+                            contentDescription = stringResource(R.string.never_scan_message),
+                            modifier = Modifier
+                                .size(80.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+
+                        Spacer(modifier = Modifier.widthIn(min = 16.dp))
+
                         Text(
                             stringResource(R.string.never_scan_message),
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
                 }
@@ -193,21 +209,26 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.heightIn(min = 8.dp))
 
+            val context = LocalContext.current
+            val articleJson = remember { readArticleFromJson(context) }
             LazyColumn(
                 userScrollEnabled = true,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                items(count = 10) { index ->
+                items(articleJson, key = { it.id }) { article ->
                     ArticleCard(
                         modifier = Modifier,
-                        articleTitle = index.toString()
+                        title = article.title,
+                        writer = article.writer,
+                        publisher = article.publisher,
+                        photo = article.photo,
+                        onClick = {
+                            navigateToArticle(article.id)
+                        }
                     )
                 }
             }
         }
     }
-//    if (isLoading) {
-//        LoadingScreen()
-//    }
 }

@@ -38,7 +38,7 @@ fun ErrorMessage(
             Text(
                 text = stringResource(R.string.try_again_message),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.background
             )
         }
     }

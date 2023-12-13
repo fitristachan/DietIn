@@ -13,6 +13,8 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.CoroutineContext
 
 class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
@@ -24,6 +26,9 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
+
+    private val _expirationTokenTimeStamp = MutableStateFlow(0L)
+    val expirationTokenTimeStamp: StateFlow<Long> = _expirationTokenTimeStamp
 
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
@@ -162,9 +167,11 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun tokenValidationCheck(
         userPreferenceViewModel: UserPreferenceViewModel,
         onSignOutComplete: (String) -> Unit,
+        onError: (String) -> Unit,
     ) {
         FirebaseAuth.getInstance().currentUser?.getIdToken(true)
             ?.addOnSuccessListener {
+                _expirationTokenTimeStamp.value = it.expirationTimestamp
                 userPreferenceViewModel.reloadToken(it.token.toString())
             }
             ?.addOnFailureListener { exception ->
@@ -181,10 +188,15 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
                     else -> {
                         // Handle other failure scenarios
-                        onSignOutComplete(exception.localizedMessage ?: "Unknown error")
+                        onError(exception.localizedMessage ?: "Unknown error")
                     }
                 }
             }
+    }
+
+    fun isFirebaseTokenExpired(expirationTokenTimeStamp: Long): Boolean {
+        val currentTime = System.currentTimeMillis()
+        return (expirationTokenTimeStamp < currentTime)
     }
 
 

@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import com.dietinapp.ui.screen.profile.ProfileScreen
 import com.dietinapp.ui.screen.scan.ScanScreen
 import com.dietinapp.ui.theme.DietInTheme
 import com.dietinapp.ui.component.BottomBar
+import com.dietinapp.ui.screen.detail.ArticleScreen
 import com.dietinapp.ui.screen.history.HistoryScreen
 import com.dietinapp.utils.errorDialog
 import com.google.firebase.Firebase
@@ -109,13 +111,20 @@ fun DietinApp(
 
     var sessionEndMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(authViewModel){
+    val expirationTime = authViewModel.expirationTokenTimeStamp.collectAsState()
+    val isExpired = authViewModel.isFirebaseTokenExpired(expirationTime.value)
+
+    LaunchedEffect(isExpired, Unit, authViewModel){
         authViewModel.tokenValidationCheck(
             userPreferenceViewModel = userPreferenceViewModel,
-            onSignOutComplete = {sessionEndMessage = it}
+            onSignOutComplete = {
+                sessionEndMessage = "Sesi Anda telah berakhir. Silakan login kembali."
+            },
+            onError = {
+                sessionEndMessage = it
+            }
         )
     }
-
 
     var username by remember { mutableStateOf("") }
     userPreferenceViewModel.getUsername().observe(lifecycleOwner) {
@@ -142,6 +151,7 @@ fun DietinApp(
             if (currentRoute != DietinScreen.Detail.route
                 && currentRoute != DietinScreen.History.route
                 && currentRoute != DietinScreen.Scan.route
+                && currentRoute != DietinScreen.Article.route
             ) {
                 BottomBar(navController)
             }
@@ -162,6 +172,10 @@ fun DietinApp(
                     },
                     navigateToDetail = {
                         val route = DietinScreen.Detail.createRoute(scanId = 0, it)
+                        navController.navigate(route)
+                    },
+                    navigateToArticle = {
+                        val route = DietinScreen.Article.createRoute(it)
                         navController.navigate(route)
                     }
                 )
@@ -255,6 +269,20 @@ fun DietinApp(
                     scanId = scanId,
                     historyId = historyId,
                     historyViewModel = historyViewModel,
+                    navigateBack = {
+                        navController.navigateUp()
+                    }
+                )
+            }
+            composable(
+                route = DietinScreen.Article.route,
+                arguments = listOf(
+                    navArgument("articleId") { type = NavType.IntType }
+                )
+            ) {
+                val articleId = it.arguments?.getInt("articleId")
+                ArticleScreen(
+                    articleId = articleId!!,
                     navigateBack = {
                         navController.navigateUp()
                     }
