@@ -184,7 +184,7 @@ fun rememberFirebaseAuthLauncher(
 ): ManagedActivityResultLauncher<Intent, ActivityResult> {
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            authViewModel.GoogleLauncher(
+            authViewModel.googleLauncher(
                 result = result,
                 context = context,
                 navController = navController,

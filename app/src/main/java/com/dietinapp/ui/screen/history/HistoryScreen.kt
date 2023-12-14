@@ -19,12 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,18 +55,19 @@ import com.dietinapp.utils.queryYear
 fun HistoryScreen(
     modifier: Modifier,
     navigateToDetail: (String) -> Unit,
-    navigateBack: () -> Unit,
     historyPagingViewModel: HistoryPagingViewModel = viewModel(
         factory = HistoryPagingViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
     var queryName by remember { mutableStateOf("") }
     var queryDate by remember { mutableStateOf("") }
+    var queryStatus by remember { mutableStateOf<Boolean?>(null) }
+
     val historiesPagingItems =
-        historyPagingViewModel.getHistories(queryName, queryDate)
+        historyPagingViewModel.getHistories(queryName, queryDate, queryStatus)
             .collectAsLazyPagingItems()
     LaunchedEffect(historyPagingViewModel) {
-        historyPagingViewModel.getHistories(queryName, queryDate)
+        historyPagingViewModel.getHistories(queryName, queryDate, queryStatus)
     }
 
     val interactionTodaySource = remember { MutableInteractionSource() }
@@ -88,31 +85,6 @@ fun HistoryScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            //back button
-            IconButton(
-                onClick = { navigateBack() },
-                modifier = Modifier.size(35.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.back_button)
-                )
-            }
-            Text(
-                text = stringResource(R.string.history),
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-        }
-
         LazyRow(
             userScrollEnabled = true,
             modifier = Modifier
@@ -123,11 +95,13 @@ fun HistoryScreen(
         ) {
             item {
                 Button(
-                    onClick = { queryDate = "" },
+                    onClick = {
+                        queryDate = ""
+                        queryStatus = null },
                     interactionSource = interactionTodaySource,
                     colors = ButtonDefaults.buttonColors(Color.White),
                     border = BorderStroke(
-                        2.dp,
+                        1.dp,
                         if (isTodayPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier
@@ -148,7 +122,7 @@ fun HistoryScreen(
                     interactionSource = interactionTodaySource,
                     colors = ButtonDefaults.buttonColors(Color.White),
                     border = BorderStroke(
-                        2.dp,
+                        1.dp,
                         if (isTodayPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier
@@ -169,7 +143,7 @@ fun HistoryScreen(
                     interactionSource = interactionMonthSource,
                     colors = ButtonDefaults.buttonColors(Color.White),
                     border = BorderStroke(
-                        2.dp,
+                        1.dp,
                         if (isMonthPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier
@@ -190,7 +164,7 @@ fun HistoryScreen(
                     interactionSource = interactionYearSource,
                     colors = ButtonDefaults.buttonColors(Color.White),
                     border = BorderStroke(
-                        2.dp,
+                        1.dp,
                         if (isYearPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier
@@ -200,6 +174,48 @@ fun HistoryScreen(
                 {
                     Text(
                         stringResource(R.string.filter_year),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = if (isTodayPressed) Color.DarkGray else MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            item {
+                Button(
+                    onClick = { queryStatus = false },
+                    interactionSource = interactionYearSource,
+                    colors = ButtonDefaults.buttonColors(Color.White),
+                    border = BorderStroke(
+                        1.dp,
+                        if (isYearPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 2.dp)
+                )
+                {
+                    Text(
+                        stringResource(R.string.low_lectine),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = if (isTodayPressed) Color.DarkGray else MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            item {
+                Button(
+                    onClick = { queryStatus = true },
+                    interactionSource = interactionYearSource,
+                    colors = ButtonDefaults.buttonColors(Color.White),
+                    border = BorderStroke(
+                        1.dp,
+                        if (isYearPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 2.dp)
+                )
+                {
+                    Text(
+                        stringResource(R.string.high_lectine),
                         style = MaterialTheme.typography.titleSmall,
                         color = if (isTodayPressed) Color.DarkGray else MaterialTheme.colorScheme.primary
                     )

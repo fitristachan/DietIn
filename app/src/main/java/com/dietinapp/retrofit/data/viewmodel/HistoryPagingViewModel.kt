@@ -10,13 +10,20 @@ import com.dietinapp.retrofit.data.di.HistoryPagingInjection
 import com.dietinapp.retrofit.data.repository.HistoriesPagingRepository
 import com.dietinapp.retrofit.response.HistoryItem
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.take
 
 class HistoryPagingViewModel(
     private val historiesPagingRepository: HistoriesPagingRepository
 ): ViewModel() {
-    fun getHistories(foodName: String, createdAt: String): Flow<PagingData<HistoryItem>> {
+    fun getHistories(foodName: String, createdAt: String, status: Boolean?): Flow<PagingData<HistoryItem>> {
         return historiesPagingRepository.getHistories(
-            foodName = foodName, createdAt = createdAt)
+            foodName = foodName, createdAt = createdAt, status = status)
+            .cachedIn(viewModelScope)
+    }
+    fun getHistoriesLimited(foodName: String, createdAt: String, status: Boolean?): Flow<PagingData<HistoryItem>> {
+        return historiesPagingRepository.getHistories(
+            foodName = foodName, createdAt = createdAt, status = status)
+            .take(5)
             .cachedIn(viewModelScope)
     }
 }

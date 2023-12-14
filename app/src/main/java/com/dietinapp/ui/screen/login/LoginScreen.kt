@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.dietinapp.R
 import com.dietinapp.firebase.AuthViewModel
 import com.dietinapp.ui.component.LoadingScreen
-import com.dietinapp.utils.errorDialog
+import com.dietinapp.ui.component.ErrorDialog
 
 @Composable
 fun LoginScreen(
@@ -361,7 +361,7 @@ fun LoginScreen(
         LoadingScreen()
     }
     if (authError.isNotEmpty()) {
-        errorDialog(
+        ErrorDialog(
             showDialog = showDialog,
             errorMsg = authError,
             onDismiss =

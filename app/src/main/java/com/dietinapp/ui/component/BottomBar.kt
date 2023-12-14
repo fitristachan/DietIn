@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,7 +40,9 @@ fun BottomBar(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    Box {
+    Box(
+        modifier = modifier.background(Color.Transparent)
+    ) {
         NavigationBar(
             modifier = modifier
                 .padding(top = 30.dp)

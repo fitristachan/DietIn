@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 class HistoriesRemoteMediator(
     private val database: HistoriesPagingDatabase,
     private val apiService: ApiService,
+    private val status: Boolean?
 ) : RemoteMediator<Int, HistoryItem>() {
 
     override suspend fun initialize(): InitializeAction {
@@ -48,10 +49,8 @@ class HistoriesRemoteMediator(
             }
         }
         try {
-            val responseData = apiService.getHistories(page, state.config.pageSize).datas
+            val responseData = apiService.getHistories(page, state.config.pageSize, status).datas
                 .sortedByDescending { it.createdAt }
-//                .filter { it.foodName.contains(filter) }
-//                .groupBy { it.createdAt[0] }
             val endOfPaginationReached = responseData.isEmpty()
 
             database.withTransaction {
@@ -64,10 +63,6 @@ class HistoriesRemoteMediator(
                 val keys = responseData.map{
                     RemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
-//                var keys: List<RemoteKeys> = emptyList()
-//                responseData.map { map ->
-//                    keys = map.value.map {  RemoteKeys(id = it.id, prevKey = prevKey, nextKey = nextKey) }
-//                }
                 database.remoteKeysDao().insertAll(keys)
                 database.historiesPagingDao().insertHistories(responseData)
             }

@@ -24,23 +24,28 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.dietinapp.R
 import com.dietinapp.article.readArticleFromJson
-import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
+import com.dietinapp.database.datastore.UserPreferenceViewModel
+import com.dietinapp.retrofit.data.viewmodel.HistoryPagingViewModel
+import com.dietinapp.retrofit.data.viewmodel.HistoryPagingViewModelFactory
 import com.dietinapp.ui.component.ArticleCard
 import com.dietinapp.ui.component.ScanCard
 import com.dietinapp.utils.capitalizeFirstLetter
@@ -49,15 +54,25 @@ import com.dietinapp.utils.capitalizeFirstLetter
 fun HomeScreen(
     modifier: Modifier = Modifier,
     username: String,
-    photo: String,
-    historyViewModel: HistoryViewModel,
+    historyPagingViewModel: HistoryPagingViewModel = viewModel(
+        factory = HistoryPagingViewModelFactory.getInstance(LocalContext.current)
+    ),
+    userPreferenceViewModel: UserPreferenceViewModel,
     navigateToDetail: (String) -> Unit,
     navigateToHistory: () -> Unit,
     navigateToArticle: (Int) -> Unit,
 ) {
-    val historyList by historyViewModel.getHistoriesLimited().collectAsState()
-    LaunchedEffect(historyViewModel) {
-        historyViewModel.getHistoriesLimited()
+    val historiesPagingItems =
+        historyPagingViewModel.getHistoriesLimited("", "", null)
+            .collectAsLazyPagingItems()
+    LaunchedEffect(historyPagingViewModel) {
+        historyPagingViewModel.getHistoriesLimited("", "", null)
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var photo by remember { mutableStateOf("") }
+    userPreferenceViewModel.getPhoto().observe(lifecycleOwner) {
+        photo = it.toString()
     }
 
     Column(
@@ -138,7 +153,6 @@ fun HomeScreen(
                 Text(
                     text = stringResource(R.string.see_more),
                     style = MaterialTheme.typography.titleSmall,
-                    fontStyle = FontStyle.Italic,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -151,7 +165,7 @@ fun HomeScreen(
             modifier = Modifier
                 .wrapContentSize()
         ) {
-            if (historyList.isEmpty()) {
+            if (historiesPagingItems.itemCount == 0) {
                 item {
                     Row(
                         horizontalArrangement = Arrangement.Start,
@@ -163,7 +177,7 @@ fun HomeScreen(
                     ) {
                         Image(
                             painter = painterResource(R.drawable.onboarding_first),
-                            contentDescription = stringResource(R.string.never_scan_message),
+                            contentDescription = stringResource(R.string.never_scan),
                             modifier = Modifier
                                 .size(80.dp)
                                 .align(Alignment.CenterVertically)
@@ -179,24 +193,26 @@ fun HomeScreen(
                     }
                 }
             } else {
-                items(items = historyList.take(5), key = { it.id }) { history ->
+                items(historiesPagingItems.itemCount.coerceAtMost(5)) { index ->
                     ScanCard(
-                        modifier = Modifier,
-                        foodName = history.foodName,
-                        foodPhoto = history.foodPhoto.toUri(),
-                        foodStatus = if (!history.lectineStatus) stringResource(R.string.low_lectine)
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        foodName = historiesPagingItems[index]!!.foodName,
+                        foodPhoto = historiesPagingItems[index]!!.foodPhoto.toUri(),
+                        foodStatus = if (!historiesPagingItems[index]!!.lectineStatus) stringResource(
+                            R.string.low_lectine
+                        )
                         else stringResource(R.string.high_lectine),
-                        color = if (!history.lectineStatus) MaterialTheme.colorScheme.primary
+                        color = if (!historiesPagingItems[index]!!.lectineStatus) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.tertiary,
                         onClick = {
-                            navigateToDetail(history.id)
+                            navigateToDetail(historiesPagingItems[index]!!.id)
                         }
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.heightIn(min = 24.dp))
+        Spacer(modifier = Modifier.heightIn(min = 16.dp))
 
         Column(
             modifier = Modifier

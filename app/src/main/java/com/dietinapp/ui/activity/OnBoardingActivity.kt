@@ -48,13 +48,11 @@ import com.dietinapp.database.preferences.OnboardingManager
 import com.dietinapp.ui.screen.onboarding.SecondScreen
 import com.dietinapp.ui.theme.DietInTheme
 import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 class OnBoardingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val auth = FirebaseAuth.getInstance()
 
         val onboardingManager = OnboardingManager(this)
         val onboardingCompleted = onboardingManager.getData("isCompleted", false)
@@ -67,13 +65,13 @@ class OnBoardingActivity : ComponentActivity() {
             )[UserPreferenceViewModel::class.java]
 
         userPreferenceViewModel.getSession().observe(this) { session: Boolean? ->
-            if (session == true && auth.currentUser != null) {
+            if (session == true) {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.flags =
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
-            } else if (onboardingCompleted) {
+            } else if (session == false && onboardingCompleted) {
                 val intent = Intent(this, AuthActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -233,7 +231,7 @@ fun OnBoarding(
     }
 }
 
-private fun Context.findActivity(): Activity? = when (this) {
+fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()
     else -> null

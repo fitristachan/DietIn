@@ -1,6 +1,7 @@
 package com.dietinapp.firebase
 
 import android.content.Context
+import android.net.Uri
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +12,6 @@ import com.dietinapp.database.datastore.UserPreferenceViewModel
 import com.dietinapp.ui.navigation.AuthScreen
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,9 +32,10 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
+    val oldPassword = MutableLiveData<String>()
     val username = MutableLiveData<String>()
 
-    fun GoogleLauncher(
+    fun googleLauncher(
         result: ActivityResult,
         context: CoroutineContext,
         navController: NavController,
@@ -119,6 +120,54 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
         )
     }
 
+    fun updatePhoto(
+        photo: Uri,
+        onUpdateComplete: () -> Unit,
+        onUpdateError: (String?) -> Unit
+    ) {
+        authRepository.updatePhoto(
+            photo, onUpdateComplete, onUpdateError
+        )
+    }
+
+    fun updateUsername(
+        onUpdateComplete: () -> Unit,
+        onUpdateError: (String?) -> Unit
+    ) {
+        authRepository.updateUsername(
+            username.value.toString(), onUpdateComplete, onUpdateError
+        )
+    }
+
+    fun updatePassword(
+        oldEmail: String,
+        onUpdateComplete: () -> Unit,
+        onUpdateError: (String?) -> Unit
+    ) {
+        authRepository.loginCustom(
+            email = oldEmail,
+            password = oldPassword.value.toString(),
+            onAuthComplete = { result ->
+                _isLoading.value = false
+                authRepository.updatePassword(
+                    password.value.toString(), onUpdateComplete, onUpdateError
+                )
+            },
+            onAuthError = {
+                onUpdateError(it)
+            }
+        )
+    }
+
+    fun updateEmail(
+        onUpdateComplete: () -> Unit,
+        onUpdateError: (String?) -> Unit
+    ) {
+        authRepository.updateEmail(
+            email.value.toString(), onUpdateComplete, onUpdateError
+        )
+    }
+
     private fun saveUserByGoogle(
         navController: NavController,
         userPreferenceViewModel: UserPreferenceViewModel,
@@ -176,7 +225,6 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             }
             ?.addOnFailureListener { exception ->
                 when (exception) {
-                    is FirebaseAuthInvalidCredentialsException,
                     is FirebaseAuthInvalidUserException -> {
                         signOut(
                             userPreferenceViewModel = userPreferenceViewModel,
@@ -200,35 +248,35 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     }
 
 
-        fun signOut(
-            userPreferenceViewModel: UserPreferenceViewModel,
-            onSignOutComplete: () -> Unit
-        ) {
-            _isLoading.value = true
-            authRepository.signOut(
-                userPreferenceViewModel,
-                onSignOutComplete
-            )
-            _isLoading.value = false
+    fun signOut(
+        userPreferenceViewModel: UserPreferenceViewModel,
+        onSignOutComplete: () -> Unit
+    ) {
+        _isLoading.value = true
+        authRepository.signOut(
+            userPreferenceViewModel,
+            onSignOutComplete
+        )
+        _isLoading.value = false
+    }
+}
+
+class AuthViewModelFactory private constructor(private val authRepository: AuthRepository) :
+    ViewModelProvider.NewInstanceFactory() {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+            return AuthViewModel(authRepository) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }
 
-    class AuthViewModelFactory private constructor(private val authRepository: AuthRepository) :
-        ViewModelProvider.NewInstanceFactory() {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
-                return AuthViewModel(authRepository) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
-        }
-
-        companion object {
-            @Volatile
-            private var instance: AuthViewModelFactory? = null
-            fun getInstance(context: Context): AuthViewModelFactory =
-                instance ?: synchronized(this) {
-                    instance ?: AuthViewModelFactory(AuthInjection.provideRepository(context))
-                }.also { instance = it }
-        }
+    companion object {
+        @Volatile
+        private var instance: AuthViewModelFactory? = null
+        fun getInstance(context: Context): AuthViewModelFactory =
+            instance ?: synchronized(this) {
+                instance ?: AuthViewModelFactory(AuthInjection.provideRepository(context))
+            }.also { instance = it }
     }
+}

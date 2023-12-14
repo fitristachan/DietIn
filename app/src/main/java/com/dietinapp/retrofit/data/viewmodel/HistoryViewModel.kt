@@ -26,11 +26,9 @@ class HistoryViewModel(
         ingredients: List<IngredientsItem>,
     ) = viewModelScope.launch { historyRepository.addHistory(foodPhoto, foodName, lectineStatus, ingredients) }
 
-    fun getHistoriesLimited() = historyRepository.getHistoriesLimited()
-
     fun getDetailHistory(historyId: String) = historyRepository.getDetailHistory(historyId)
 
-
+    fun deleteHistory(historyId: String) = viewModelScope.launch {historyRepository.deleteHistory(historyId)}
 }
 
 

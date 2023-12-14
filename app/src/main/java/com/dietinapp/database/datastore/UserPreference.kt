@@ -74,6 +74,35 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
     }
 
 
+    suspend fun saveOnlyUsername(username: String) {
+        dataStore.edit { preferences ->
+            preferences[this.username] = ""
+        }
+        dataStore.edit { preferences ->
+            preferences[this.username] = username
+        }
+    }
+
+
+    suspend fun saveOnlyPhoto(photo: String) {
+        dataStore.edit { preferences ->
+            preferences[this.photo] = ""
+        }
+        dataStore.edit { preferences ->
+            preferences[this.photo] = photo
+        }
+    }
+
+    suspend fun saveOnlyEmail(email: String) {
+        dataStore.edit { preferences ->
+            preferences[this.email] = ""
+        }
+        dataStore.edit { preferences ->
+            preferences[this.email] = email
+        }
+    }
+
+
     suspend fun deleteAll() {
         dataStore.edit { preferences ->
             preferences[this.token] = ""

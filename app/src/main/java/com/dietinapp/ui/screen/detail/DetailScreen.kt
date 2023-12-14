@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -48,7 +50,9 @@ import com.dietinapp.ui.component.IngredientCard
 import com.dietinapp.model.readRecipesFromJson
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
 import com.dietinapp.retrofit.response.IngredientsItem
+import com.dietinapp.ui.component.ConfirmationDialog
 import com.dietinapp.ui.component.LoadingScreen
+import com.dietinapp.ui.component.ErrorDialog
 import com.dietinapp.utils.imageFileInGallery
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -58,11 +62,14 @@ fun DetailScreen(
     modifier: Modifier,
     scanId: Int,
     historyId: String,
+    errorMessage: String,
     historyViewModel: HistoryViewModel,
     navigateBack: () -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    var errorNetworkMessage by remember { mutableStateOf("") }
 
     var foodName by remember { mutableStateOf("") }
     var foodStatus by remember { mutableStateOf("") }
@@ -71,6 +78,7 @@ fun DetailScreen(
     val color =
         if (foodStatus == stringResource(R.string.low_lectine)) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.tertiary
+
     var isLoading by remember { mutableStateOf(false) }
 
 
@@ -107,6 +115,16 @@ fun DetailScreen(
             if (!statusBoolean) stringResource(R.string.low_lectine) else stringResource(R.string.high_lectine)
     }
 
+    var showDialog by remember { mutableStateOf(false) }
+    if (errorMessage.isNotEmpty()) {
+        errorNetworkMessage = errorMessage
+        if (errorNetworkMessage.isNotEmpty()){
+            showDialog = true
+        }
+    }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,7 +140,7 @@ fun DetailScreen(
                 .fillMaxWidth()
                 .padding(vertical = 56.dp, horizontal = 24.dp),
             verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             //back button
             IconButton(
@@ -132,6 +150,21 @@ fun DetailScreen(
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.back_button))
+            }
+            if (historyId != stringResource(R.string.local)) {
+                IconButton(
+                    onClick = { showDeleteDialog = true },
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(20))
+                ){
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_delete),
+                        contentDescription = stringResource(R.string.delete_history_button),
+                        tint = Color.White
+                    )
+                }
             }
         }
     }
@@ -232,4 +265,27 @@ fun DetailScreen(
     if (isLoading){
         LoadingScreen()
     }
+    ErrorDialog(
+        showDialog = showDialog,
+        errorMsg = errorNetworkMessage,
+        onDismiss =
+        {
+            errorNetworkMessage = ""
+            showDialog = false
+            navigateBack()
+        }
+    )
+    ConfirmationDialog(
+        showDialog = showDeleteDialog,
+        title = stringResource(R.string.delete_confirmation_title),
+        text = stringResource(R.string.delete_confirmation_text, foodName),
+        onConfirm = {
+            historyViewModel.deleteHistory(historyId)
+            navigateBack()
+            showDeleteDialog = false
+        },
+        onCancel = {
+            showDeleteDialog = false
+        }
+    )
 }

@@ -1,6 +1,7 @@
 package com.dietinapp.firebase
 
 import android.content.ContentValues.TAG
+import android.net.Uri
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import com.dietinapp.database.datastore.UserPreferenceViewModel
@@ -143,6 +144,88 @@ class AuthRepository private constructor(
                     onAuthComplete(authResult)
                 } else {
                     onAuthError(signInTask.exception?.localizedMessage)
+                }
+            }
+    }
+
+    fun updateUsername(
+        username: String,
+        onUpdateComplete: () -> Unit,
+        onUpdateError: (String?) -> Unit
+    ){
+        val user = firebaseAuth.currentUser
+        val userProfileChangeRequest = UserProfileChangeRequest.Builder()
+            .setDisplayName(username)
+            .build()
+
+        user?.updateProfile(userProfileChangeRequest)
+            ?.addOnCompleteListener { profileUpdateTask ->
+                if (profileUpdateTask.isSuccessful) {
+                    onUpdateComplete()
+                } else {
+                    onUpdateError(profileUpdateTask.exception?.localizedMessage)
+                }
+            }
+    }
+
+    fun updatePhoto(
+        photo: Uri,
+        onUpdateComplete: () -> Unit,
+        onUpdateError: (String?) -> Unit
+    ){
+        val user = firebaseAuth.currentUser
+        val userProfileChangeRequest = UserProfileChangeRequest.Builder()
+            .setPhotoUri(photo)
+            .build()
+
+        user?.updateProfile(userProfileChangeRequest)
+            ?.addOnCompleteListener { profileUpdateTask ->
+                if (profileUpdateTask.isSuccessful) {
+                    onUpdateComplete()
+                } else {
+                    onUpdateError(profileUpdateTask.exception?.localizedMessage)
+                }
+            }
+    }
+
+    @Suppress("DEPRECATION")
+    fun updateEmail(
+        email: String,
+        onUpdateComplete: () -> Unit,
+        onUpdateError: (String?) -> Unit
+    ){
+        val user = firebaseAuth.currentUser
+        user?.apply {
+            this.updateEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        this.sendEmailVerification()
+                            .addOnCompleteListener { verificationTask ->
+                                if (verificationTask.isSuccessful) {
+                                    onUpdateComplete()
+                                } else {
+                                    onUpdateError(verificationTask.exception?.localizedMessage)
+                                }
+                            }
+                    } else {
+                        onUpdateError(task.exception?.localizedMessage)
+                    }
+                }
+        }
+    }
+
+    fun updatePassword(
+        password: String,
+        onUpdateComplete: () -> Unit,
+        onUpdateError: (String?) -> Unit
+    ){
+        val user = firebaseAuth.currentUser
+        user?.updatePassword(password)
+            ?.addOnCompleteListener { profileUpdateTask ->
+                if (profileUpdateTask.isSuccessful) {
+                    onUpdateComplete()
+                } else {
+                    onUpdateError(profileUpdateTask.exception?.localizedMessage)
                 }
             }
     }

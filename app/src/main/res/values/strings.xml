@@ -75,4 +75,27 @@
     <string name="filter_all">Semua</string>
     <string name="filter_month">Bulan ini</string>
     <string name="filter_year">Tahun ini</string>
+    <string name="never_scan">Kamu belum pernah scan, nih:(</string>
+    <string name="change_username">Ubah Username</string>
+    <string name="change_password">Ubah Password</string>
+    <string name="old_username">Username Lama</string>
+    <string name="new_username">Username Baru</string>
+    <string name="old_password">Password Lama</string>
+    <string name="new_password">Password Baru</string>
+    <string name="old_email">Email Lama</string>
+    <string name="new_email">Email Baru</string>
+    <string name="change_email">Ubah Email</string>
+    <string name="old_photo">Foto Lama</string>
+    <string name="delete_history_button">Hapus Riwayat</string>
+    <string name="delete_confirmation_text">Apakah Anda yakin ingin menghapus %1$s?</string>
+    <string name="delete_confirmation_title">Hapus Riwayat</string>
+    <string name="chooseNewPhoto">Pilih Foto Baru</string>
+    <string name="change_photo">Ubah Foto</string>
+    <string name="change_photo_successfully">Foto berhasil diperbarui</string>
+    <string name="password_update_successfully">Password berhasil diperbarui</string>
+    <string name="username_update_successfully">Username berhasil diperbarui</string>
+    <string name="close">Tutup</string>
+    <string name="coming_soon">Segera rilis!!!</string>
+    <string name="email_update_successfully">Email berhasil diperbarui</string>
+    <string name="old_password_empty_warning">Password lama harus diisi</string>
 </resources>

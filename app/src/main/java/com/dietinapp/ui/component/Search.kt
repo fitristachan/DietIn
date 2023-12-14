@@ -41,7 +41,7 @@ fun Search(
         modifier = Modifier
             .height(48.dp)
             .fillMaxWidth()
-            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20))
+            .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(20))
             .shadow(elevation = 2.dp, shape = RoundedCornerShape(20))
             .background(
                 color = MaterialTheme.colorScheme.background,

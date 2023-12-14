@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.Flow
 class HistoriesPagingRepository(
     private val historiesPagingDatabase: HistoriesPagingDatabase, private val apiService: ApiService
 ) {
-    fun getHistories(foodName: String, createdAt: String): Flow<PagingData<HistoryItem>> {
+    fun getHistories(foodName: String, createdAt: String, status: Boolean?): Flow<PagingData<HistoryItem>> {
         @OptIn(ExperimentalPagingApi::class) return Pager(config = PagingConfig(
             pageSize = 5
         ),
-            remoteMediator = HistoriesRemoteMediator(historiesPagingDatabase, apiService),
+            remoteMediator = HistoriesRemoteMediator(historiesPagingDatabase, apiService, status),
             pagingSourceFactory = {
                 historiesPagingDatabase.historiesPagingDao().getAllHistories(
                     foodName = foodName,

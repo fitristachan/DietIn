@@ -39,6 +39,24 @@ class UserPreferenceViewModel (private val pref: UserPreference) : ViewModel() {
         }
     }
 
+    fun savePhoto(photo: String) {
+        viewModelScope.launch {
+            pref.saveOnlyPhoto(photo)
+        }
+    }
+
+    fun saveUsername(username: String) {
+        viewModelScope.launch {
+            pref.saveOnlyUsername(username)
+        }
+    }
+
+    fun saveEmail(email: String) {
+        viewModelScope.launch {
+            pref.saveOnlyEmail(email)
+        }
+    }
+
     fun reloadToken(token: String){
         viewModelScope.launch {
             pref.deleteOnlyToken()

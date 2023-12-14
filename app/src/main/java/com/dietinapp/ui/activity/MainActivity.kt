@@ -1,10 +1,8 @@
 package com.dietinapp.ui.activity
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -21,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -48,9 +47,13 @@ import com.dietinapp.ui.screen.profile.ProfileScreen
 import com.dietinapp.ui.screen.scan.ScanScreen
 import com.dietinapp.ui.theme.DietInTheme
 import com.dietinapp.ui.component.BottomBar
+import com.dietinapp.ui.component.TopBar
 import com.dietinapp.ui.screen.detail.ArticleScreen
 import com.dietinapp.ui.screen.history.HistoryScreen
-import com.dietinapp.utils.errorDialog
+import com.dietinapp.ui.component.ErrorDialog
+import com.dietinapp.ui.screen.profile.ChangeEmailScreen
+import com.dietinapp.ui.screen.profile.ChangePasswordScreen
+import com.dietinapp.ui.screen.profile.ChangeUsernameScreen
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -79,7 +82,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             DietInTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -110,21 +112,25 @@ fun DietinApp(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var sessionEndMessage by remember { mutableStateOf("") }
+    var emailUpdateError by remember { mutableStateOf("") }
+    var passwordUpdateError by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
 
     val expirationTime = authViewModel.expirationTokenTimeStamp.collectAsState()
     val isExpired = authViewModel.isFirebaseTokenExpired(expirationTime.value)
 
-    LaunchedEffect(isExpired, Unit, authViewModel){
+    LaunchedEffect(isExpired, Unit, authViewModel) {
         authViewModel.tokenValidationCheck(
             userPreferenceViewModel = userPreferenceViewModel,
             onSignOutComplete = {
                 sessionEndMessage = "Sesi Anda telah berakhir. Silakan login kembali."
             },
             onError = {
-                sessionEndMessage = it
+                errorMessage = it
             }
         )
     }
+
 
     var username by remember { mutableStateOf("") }
     userPreferenceViewModel.getUsername().observe(lifecycleOwner) {
@@ -136,26 +142,62 @@ fun DietinApp(
         email = it.toString()
     }
 
-    var photo by remember { mutableStateOf("") }
-    userPreferenceViewModel.getPhoto().observe(lifecycleOwner) {
-        photo = it.toString()
-    }
-
     var showDialog by remember { mutableStateOf(false) }
-    if (sessionEndMessage.isNotEmpty()){
+    var showEmailErrorDialog by remember { mutableStateOf(false) }
+    var showPasswordErrorDialog by remember { mutableStateOf(false) }
+    if (sessionEndMessage.isNotEmpty()) {
         showDialog = true
+    } else if (emailUpdateError.isNotEmpty()){
+        showEmailErrorDialog = true
+    } else if (passwordUpdateError.isNotEmpty()){
+        showPasswordErrorDialog = true
     }
 
     Scaffold(
+        containerColor = Color.Transparent,
         bottomBar = {
             if (currentRoute != DietinScreen.Detail.route
                 && currentRoute != DietinScreen.History.route
                 && currentRoute != DietinScreen.Scan.route
                 && currentRoute != DietinScreen.Article.route
+                && currentRoute != DietinScreen.ChangeUsername.route
+                && currentRoute != DietinScreen.ChangePassword.route
+                && currentRoute != DietinScreen.ChangeEmail.route
+
             ) {
                 BottomBar(navController)
             }
-        }
+        },
+        topBar = {
+            if (currentRoute != DietinScreen.Home.route
+                && currentRoute != DietinScreen.Profile.route
+                && currentRoute != DietinScreen.Scan.route
+                && currentRoute != DietinScreen.Detail.route
+            ) {
+                var text = ""
+                when (currentRoute) {
+                    DietinScreen.History.route -> {
+                        text = stringResource(R.string.history)
+                    }
+                    DietinScreen.Article.route -> {
+                        text = stringResource(R.string.article_read)
+                    }
+                    DietinScreen.ChangeUsername.route -> {
+                        text = stringResource(R.string.change_username)
+                    }
+                    DietinScreen.ChangePassword.route -> {
+                        text = stringResource(R.string.change_password)
+                    }
+                    DietinScreen.ChangeEmail.route -> {
+                        text = stringResource(R.string.change_email)
+                    }
+                }
+                TopBar(
+                    navigateBack = { navController.navigateUp() },
+                    title = text
+                )
+            }
+        },
     ) { innerPadding ->
         NavHost(
             modifier = Modifier.padding(innerPadding),
@@ -165,8 +207,7 @@ fun DietinApp(
             composable(DietinScreen.Home.route) {
                 HomeScreen(
                     username = username,
-                    photo = photo,
-                    historyViewModel = historyViewModel,
+                    userPreferenceViewModel = userPreferenceViewModel,
                     navigateToHistory = {
                         navController.navigate(DietinScreen.History.route)
                     },
@@ -179,11 +220,12 @@ fun DietinApp(
                         navController.navigate(route)
                     }
                 )
-                errorDialog(
+                ErrorDialog(
                     showDialog = showDialog,
                     errorMsg = sessionEndMessage,
                     onDismiss =
                     {
+                        sessionEndMessage = ""
                         showDialog = false
                         context.findActivity()?.finish()
                         context.startActivity(
@@ -199,26 +241,23 @@ fun DietinApp(
                 ProfileScreen(
                     username = username,
                     email = email,
-                    photo = photo,
                     authViewModel = authViewModel,
-                    logOut = {
-                        authViewModel.signOut(
-                            userPreferenceViewModel,
-                            onSignOutComplete = {
-                                context.findActivity()?.finish()
-                                context.startActivity(
-                                    Intent(
-                                        context,
-                                        AuthActivity::class.java
-                                    )
-                                )
-                            })
-                    },
+                    userPreferenceViewModel = userPreferenceViewModel,
                     navigateToHistory = {
                         navController.navigate(DietinScreen.History.route)
+                    },
+                    navigateToChangeUsername = {
+                        navController.navigate(DietinScreen.ChangeUsername.route)
+                    },
+                    navigateToChangeEmail = {
+                        val emailRoute = DietinScreen.ChangeEmail.createRoute(email)
+                        navController.navigate(emailRoute)
+                    },
+                    navigateToChangePassword = {
+                        navController.navigate(DietinScreen.ChangePassword.route)
                     }
                 )
-                errorDialog(
+                ErrorDialog(
                     showDialog = showDialog,
                     errorMsg = sessionEndMessage,
                     onDismiss =
@@ -250,9 +289,6 @@ fun DietinApp(
                         val route = DietinScreen.Detail.createRoute(scanId = 0, it)
                         navController.navigate(route)
                     },
-                    navigateBack = {
-                        navController.navigateUp()
-                    }
                 )
             }
             composable(
@@ -263,7 +299,8 @@ fun DietinApp(
                 )
             ) {
                 val scanId = it.arguments?.getInt("scanId") ?: 0
-                val historyId = it.arguments?.getString("historyId") ?: stringResource(R.string.local)
+                val historyId =
+                    it.arguments?.getString("historyId") ?: stringResource(R.string.local)
                 DetailScreen(
                     modifier,
                     scanId = scanId,
@@ -271,7 +308,8 @@ fun DietinApp(
                     historyViewModel = historyViewModel,
                     navigateBack = {
                         navController.navigateUp()
-                    }
+                    },
+                    errorMessage = errorMessage,
                 )
             }
             composable(
@@ -283,17 +321,91 @@ fun DietinApp(
                 val articleId = it.arguments?.getInt("articleId")
                 ArticleScreen(
                     articleId = articleId!!,
-                    navigateBack = {
-                        navController.navigateUp()
+                )
+            }
+            composable(
+                route = DietinScreen.ChangeEmail.route,
+                arguments = listOf(
+                    navArgument("email") { type = NavType.StringType }
+                )
+            ) {
+                val oldEmail = it.arguments?.getString("email")
+                ChangeEmailScreen(
+                    oldEmail = oldEmail!!,
+                    authViewModel = authViewModel,
+                    onClick = {
+                        val newEmail = authViewModel.email.value
+                        authViewModel.updateEmail(
+                            onUpdateComplete = {
+                                userPreferenceViewModel.saveEmail(newEmail.toString())
+                                Toast.makeText(context,
+                                    R.string.email_update_successfully, Toast.LENGTH_SHORT).show()
+                                navController.navigateUp() },
+                            onUpdateError = {emailError ->
+                                emailUpdateError = emailError.toString()
+//                                Toast.makeText(context, emailError.toString(), Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+                )
+                ErrorDialog(
+                    showDialog = showEmailErrorDialog,
+                    errorMsg = emailUpdateError,
+                    onDismiss =
+                    {
+                        emailUpdateError = ""
+                        showEmailErrorDialog = false
                     }
                 )
             }
+            composable(DietinScreen.ChangePassword.route)
+             {
+                ChangePasswordScreen(
+                    authViewModel = authViewModel,
+                    onClick = {
+                        authViewModel.updatePassword(
+                            oldEmail = email,
+                            onUpdateComplete = {
+                                Toast.makeText(context,
+                                   R.string.password_update_successfully, Toast.LENGTH_SHORT).show()
+                                navController.navigateUp() },
+                            onUpdateError = {
+                                passwordUpdateError = it.toString()
+//                                Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+                )
+                 ErrorDialog(
+                     showDialog = showPasswordErrorDialog,
+                     errorMsg = passwordUpdateError,
+                     onDismiss =
+                     {
+                         passwordUpdateError = ""
+                         showPasswordErrorDialog = false
+                     }
+                 )
+            }
+            composable(
+                route = DietinScreen.ChangeUsername.route) {
+                ChangeUsernameScreen(
+                    oldUsername = username,
+                    authViewModel = authViewModel,
+                    onClick = {
+                        val newUsername = authViewModel.username.value
+                        authViewModel.updateUsername(
+                            onUpdateComplete = {
+                                userPreferenceViewModel.saveUsername(newUsername.toString())
+                                Toast.makeText(context,
+                                    R.string.username_update_successfully, Toast.LENGTH_SHORT).show()
+                                navController.navigateUp() },
+                            onUpdateError = {
+                                Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    })
+
+            }
         }
     }
-}
-
-private fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
 }

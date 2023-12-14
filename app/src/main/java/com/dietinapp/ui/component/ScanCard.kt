@@ -78,7 +78,7 @@ fun ScanCard(
                 ) {
                     Box(
                         modifier = Modifier
-                            .sizeIn(minWidth = 110.dp, minHeight = 35.dp)
+                            .sizeIn(minWidth = 97.dp, minHeight = 30.dp)
                             .background(
                                 color,
                                 RoundedCornerShape(20.dp)

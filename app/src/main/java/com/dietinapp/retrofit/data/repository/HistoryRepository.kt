@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.dietinapp.retrofit.api.ApiService
-import com.dietinapp.retrofit.response.HistoriesResponse
-import com.dietinapp.retrofit.response.HistoryItem
+import com.dietinapp.retrofit.response.DeleteResponse
 import com.dietinapp.retrofit.response.HistoryResponse
 import com.dietinapp.retrofit.response.IngredientsItem
 import com.google.gson.Gson
@@ -24,19 +23,16 @@ import java.io.File
 class HistoryRepository private constructor(
     private val apiService: ApiService
 ){
-    private val _historiesResponse = MutableStateFlow<List<HistoryItem>>(emptyList())
-    private val historiesResponse: StateFlow<List<HistoryItem>> = _historiesResponse
-
     private val _historyResponse = MutableLiveData<HistoryResponse>()
     private val historyResponse: LiveData<HistoryResponse> = _historyResponse
 
-    private val _successMessage = MutableStateFlow<String>("")
+    private val _successMessage = MutableStateFlow("")
     val successMessage: StateFlow<String> = _successMessage
 
-    private val _errorMessage = MutableStateFlow<String>("")
+    private val _errorMessage = MutableStateFlow("")
     val errorMessage: StateFlow<String> = _errorMessage
 
-    private val _isLoading = MutableStateFlow<Boolean>(false)
+    private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
     fun addHistory(
@@ -88,37 +84,35 @@ class HistoryRepository private constructor(
 
     }
 
-    fun getHistoriesLimited(): StateFlow<List<HistoryItem>>{
-        _isLoading.value = true
+    fun deleteHistory(
+        historyId: String
+    ){
         _errorMessage.value = ""
         _successMessage.value = ""
 
-        val client = apiService.getHistoriesLimited()
+        val client = apiService.deleteHistory(historyId)
 
-        client.enqueue(object: Callback<HistoriesResponse> {
+        client.enqueue(object: Callback<DeleteResponse> {
             override fun onResponse(
-                call: Call<HistoriesResponse>,
-                response: Response<HistoriesResponse>
+                call: Call<DeleteResponse>,
+                response: Response<DeleteResponse>
             ) {
                 _isLoading.value = false
                 if (response.isSuccessful) {
-                    _historiesResponse.value = response.body()!!.datas.sortedByDescending { it.createdAt }
                     _successMessage.value = response.message().toString()
                 } else {
                     _errorMessage.value = response.message().toString()
                 }
             }
 
-            override fun onFailure(call: Call<HistoriesResponse>, t: Throwable) {
+            override fun onFailure(call: Call<DeleteResponse>, t: Throwable) {
                 _isLoading.value = false
                 val errorResponse = t.message
                 _errorMessage.value = errorResponse.toString()
-                Log.e("Add History Repo", "onFailure: $errorResponse")
+                Log.e("Detail History Repo", "onFailure: $errorResponse")
             }
 
         })
-
-        return historiesResponse
     }
 
     fun getDetailHistory(
