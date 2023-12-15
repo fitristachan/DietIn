@@ -2,8 +2,6 @@ package com.dietinapp.ui.screen.history
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -70,161 +68,23 @@ fun HistoryScreen(
         historyPagingViewModel.getHistories(queryName, queryDate, queryStatus)
     }
 
-    val interactionTodaySource = remember { MutableInteractionSource() }
-    val isTodayPressed by interactionTodaySource.collectIsPressedAsState()
+    var isAllPressed by remember { mutableStateOf(false) }
 
-    val interactionYearSource = remember { MutableInteractionSource() }
-    val isYearPressed by interactionYearSource.collectIsPressedAsState()
+    var isTodayPressed by remember { mutableStateOf(false) }
 
-    val interactionMonthSource = remember { MutableInteractionSource() }
-    val isMonthPressed by interactionMonthSource.collectIsPressedAsState()
+    var isYearPressed by remember { mutableStateOf(false) }
 
+    var isMonthPressed by remember { mutableStateOf(false) }
+
+    var isFreePressed by remember { mutableStateOf(false) }
+
+    var isContainPressed by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        LazyRow(
-            userScrollEnabled = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            item {
-                Button(
-                    onClick = {
-                        queryDate = ""
-                        queryStatus = null },
-                    interactionSource = interactionTodaySource,
-                    colors = ButtonDefaults.buttonColors(Color.White),
-                    border = BorderStroke(
-                        1.dp,
-                        if (isTodayPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(horizontal = 2.dp)
-                ) {
-                    Text(
-                        stringResource(R.string.filter_all),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = if (isTodayPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            item {
-                Button(
-                    onClick = { queryDate = queryToday() },
-                    interactionSource = interactionTodaySource,
-                    colors = ButtonDefaults.buttonColors(Color.White),
-                    border = BorderStroke(
-                        1.dp,
-                        if (isTodayPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(horizontal = 2.dp)
-                )
-                {
-                    Text(
-                        "Hari ini",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = if (isTodayPressed) Color.DarkGray else MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            item {
-                Button(
-                    onClick = { queryDate = queryMonth() },
-                    interactionSource = interactionMonthSource,
-                    colors = ButtonDefaults.buttonColors(Color.White),
-                    border = BorderStroke(
-                        1.dp,
-                        if (isMonthPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(horizontal = 2.dp)
-                )
-                {
-                    Text(
-                        stringResource(R.string.filter_month),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = if (isTodayPressed) Color.DarkGray else MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            item {
-                Button(
-                    onClick = { queryDate = queryYear() },
-                    interactionSource = interactionYearSource,
-                    colors = ButtonDefaults.buttonColors(Color.White),
-                    border = BorderStroke(
-                        1.dp,
-                        if (isYearPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(horizontal = 2.dp)
-                )
-                {
-                    Text(
-                        stringResource(R.string.filter_year),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = if (isTodayPressed) Color.DarkGray else MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            item {
-                Button(
-                    onClick = { queryStatus = false },
-                    interactionSource = interactionYearSource,
-                    colors = ButtonDefaults.buttonColors(Color.White),
-                    border = BorderStroke(
-                        1.dp,
-                        if (isYearPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(horizontal = 2.dp)
-                )
-                {
-                    Text(
-                        stringResource(R.string.low_lectine),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = if (isTodayPressed) Color.DarkGray else MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-            item {
-                Button(
-                    onClick = { queryStatus = true },
-                    interactionSource = interactionYearSource,
-                    colors = ButtonDefaults.buttonColors(Color.White),
-                    border = BorderStroke(
-                        1.dp,
-                        if (isYearPressed) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(horizontal = 2.dp)
-                )
-                {
-                    Text(
-                        stringResource(R.string.high_lectine),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = if (isTodayPressed) Color.DarkGray else MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -240,6 +100,248 @@ fun HistoryScreen(
                 }
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        LazyRow(
+            userScrollEnabled = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            if (queryDate == "" && queryStatus == null) {
+                isAllPressed = true
+            }
+            item {
+                Button(
+                    onClick = {
+                        if (!isAllPressed) {
+                            isAllPressed = true
+                            isTodayPressed = false
+                            isMonthPressed = false
+                            isYearPressed = false
+                            isContainPressed = false
+                            isFreePressed = false
+                            queryDate = ""
+                            queryStatus = null
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        if (isAllPressed) MaterialTheme.colorScheme.primary.copy(
+                            0.2f
+                        ) else Color.White
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        if (isAllPressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 2.dp)
+                ) {
+                    Text(
+                        stringResource(R.string.filter_all),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = if (isAllPressed) MaterialTheme.colorScheme.primary else Color.DarkGray
+                    )
+                }
+            }
+            when (queryDate) {
+                queryToday() -> {
+                    isTodayPressed = true
+                    isMonthPressed = false
+                    isYearPressed = false
+                    isAllPressed = false
+                }
+                queryMonth() -> {
+                    isMonthPressed = true
+                    isTodayPressed = false
+                    isYearPressed = false
+                    isAllPressed = false
+                }
+                queryYear() -> {
+                    isYearPressed = true
+                    isMonthPressed = false
+                    isTodayPressed = false
+                    isAllPressed = false
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        if (!isTodayPressed) {
+                            isTodayPressed = true
+                            queryDate = queryToday()
+                        } else {
+                            isTodayPressed = false
+                            queryDate = ""
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        if (isTodayPressed) MaterialTheme.colorScheme.primary.copy(
+                            0.2f
+                        ) else Color.White
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        if (isTodayPressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 2.dp)
+                ) {
+                    Text(
+                        stringResource(R.string.filter_today),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = if (isTodayPressed) MaterialTheme.colorScheme.primary else Color.DarkGray
+                    )
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        if (!isMonthPressed) {
+                            isMonthPressed = true
+                            queryDate = queryMonth()
+                        } else {
+                            isMonthPressed = false
+                            queryDate = ""
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        if (isMonthPressed) MaterialTheme.colorScheme.primary.copy(
+                            0.2f
+                        ) else Color.White
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        if (isMonthPressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 2.dp)
+                )
+                {
+                    Text(
+                        stringResource(R.string.filter_month),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = if (isMonthPressed) MaterialTheme.colorScheme.primary else Color.DarkGray
+                    )
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        queryDate = if (!isYearPressed) {
+                            isYearPressed = true
+                            queryYear()
+                        } else {
+                            isYearPressed = false
+                            ""
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        if (isYearPressed) MaterialTheme.colorScheme.primary.copy(
+                            0.2f
+                        ) else Color.White
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        if (isYearPressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 2.dp)
+                )
+                {
+                    Text(
+                        stringResource(R.string.filter_year),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = if (isYearPressed) MaterialTheme.colorScheme.primary else Color.DarkGray
+                    )
+                }
+            }
+            when (queryStatus) {
+                false -> {
+                    isFreePressed = true
+                }
+
+                true -> {
+                    isContainPressed = true
+                }
+
+                null -> {
+                    isFreePressed = false
+                    isContainPressed = false
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        if (!isFreePressed) {
+                            isFreePressed = true
+                            isContainPressed = false
+                            queryStatus = false
+                        } else {
+                            isFreePressed = false
+                            queryStatus = null
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        if (isFreePressed) MaterialTheme.colorScheme.primary.copy(
+                            0.2f
+                        ) else Color.White
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        if (isFreePressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 2.dp)
+                )
+                {
+                    Text(
+                        stringResource(R.string.free_lectine),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = if (isFreePressed) MaterialTheme.colorScheme.primary else Color.DarkGray
+                    )
+                }
+            }
+            item {
+                Button(
+                    onClick = {
+                        if (!isContainPressed) {
+                            isContainPressed = true
+                            isFreePressed = false
+                            queryStatus = true
+                        } else {
+                            isContainPressed = false
+                            queryStatus = null
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        if (isContainPressed) MaterialTheme.colorScheme.primary.copy(
+                            0.2f
+                        ) else Color.White
+                    ),
+                    border = BorderStroke(
+                        1.dp,
+                        if (isContainPressed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 2.dp)
+                )
+                {
+                    Text(
+                        stringResource(R.string.contain_lectine),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = if (isContainPressed) MaterialTheme.colorScheme.primary else Color.DarkGray
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -253,9 +355,9 @@ fun HistoryScreen(
                     foodName = historiesPagingItems[index]!!.foodName,
                     foodPhoto = historiesPagingItems[index]!!.foodPhoto.toUri(),
                     foodStatus = if (!historiesPagingItems[index]!!.lectineStatus) stringResource(
-                        R.string.low_lectine
+                        R.string.free_lectine
                     )
-                    else stringResource(R.string.high_lectine),
+                    else stringResource(R.string.contain_lectine),
                     color = if (!historiesPagingItems[index]!!.lectineStatus) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.tertiary,
                     onClick = {

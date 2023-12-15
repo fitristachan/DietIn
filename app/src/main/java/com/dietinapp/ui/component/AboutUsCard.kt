@@ -30,13 +30,19 @@ fun AboutUsCard(
                 onDismissRequest = onDismiss,
                 text = {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.Start
                     ){
                         Image(painter = painterResource(id = R.drawable.logo),
                             contentDescription = stringResource(id = R.string.app_name))
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = stringResource(id = R.string.app_name),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(R.string.app_slogan),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground,
                         )

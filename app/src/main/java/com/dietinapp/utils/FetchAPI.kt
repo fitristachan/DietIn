@@ -23,13 +23,15 @@ fun processAndFetch(
     onProcessAdditional: () -> Unit,
     navigateToDetail: (Int) -> Unit
 ) {
-    CoroutineScope(Dispatchers.IO).launch {
-        processImage(context, imageUri) { result ->
+
+    processImage(context, imageUri) { result ->
+        CoroutineScope(Dispatchers.IO).launch {
             val recipes = readRecipesFromJson(context)
             val foodName = recipes[result].name
             val lectineStatus = recipes[result].status
 
             val ingredients: List<IngredientsItem> = recipes[result].ingredients
+
 
             val foodPhoto = uriToFile(imageUri, context).reduceFileImage()
             imageFileInGallery.value = imageUri.toString()
@@ -42,11 +44,11 @@ fun processAndFetch(
                 lectineStatus = lectineStatus,
                 ingredients = ingredients
             )
-            CoroutineScope(Dispatchers.Main).launch {
-                onProcessAdditional()
-                navigateToDetail(result)
-            }
         }
+
+        onProcessAdditional()
+        navigateToDetail(result)
+
     }
 
 }

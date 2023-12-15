@@ -7,9 +7,7 @@ sealed class DietinScreen (val route: String) {
 
 
     object Profile : DietinScreen("profile")
-    object ChangeEmail : DietinScreen("{email}"){
-        fun createRoute(email: String): String = email
-    }
+
     object ChangeUsername : DietinScreen("username")
     object ChangePassword : DietinScreen("password")
 

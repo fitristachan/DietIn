@@ -188,32 +188,6 @@ class AuthRepository private constructor(
             }
     }
 
-    @Suppress("DEPRECATION")
-    fun updateEmail(
-        email: String,
-        onUpdateComplete: () -> Unit,
-        onUpdateError: (String?) -> Unit
-    ){
-        val user = firebaseAuth.currentUser
-        user?.apply {
-            this.updateEmail(email)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        this.sendEmailVerification()
-                            .addOnCompleteListener { verificationTask ->
-                                if (verificationTask.isSuccessful) {
-                                    onUpdateComplete()
-                                } else {
-                                    onUpdateError(verificationTask.exception?.localizedMessage)
-                                }
-                            }
-                    } else {
-                        onUpdateError(task.exception?.localizedMessage)
-                    }
-                }
-        }
-    }
-
     fun updatePassword(
         password: String,
         onUpdateComplete: () -> Unit,

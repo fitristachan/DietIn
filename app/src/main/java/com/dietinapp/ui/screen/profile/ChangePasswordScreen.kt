@@ -1,5 +1,6 @@
 package com.dietinapp.ui.screen.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +36,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.dietinapp.R
 import com.dietinapp.firebase.AuthViewModel
-import com.dietinapp.ui.component.LoadingScreen
+import com.dietinapp.ui.component.ConfirmationDialog
 import com.dietinapp.ui.component.ErrorDialog
 import java.util.regex.Pattern
 
@@ -43,24 +44,25 @@ import java.util.regex.Pattern
 fun ChangePasswordScreen(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
-    onClick: () -> Unit
-){
+    oldEmail: String,
+    navigateBack: () -> Unit
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var showDialog by remember { mutableStateOf(false) }
-    authViewModel.showDialog.observe(lifecycleOwner){
+    authViewModel.showDialog.observe(lifecycleOwner) {
         showDialog = it
     }
 
-    var authError by remember { mutableStateOf("") }
-    authViewModel.errorMessage.observe(lifecycleOwner){
-        authError = it
+    var showConfirmationDialog by remember { mutableStateOf(false) }
+    authViewModel.showDialog.observe(lifecycleOwner) {
+        showConfirmationDialog = it
     }
 
-    var isLoading by remember { mutableStateOf(false) }
-    authViewModel.isLoading.observe(lifecycleOwner){
-        isLoading = it
+    var authError by remember { mutableStateOf("") }
+    authViewModel.errorMessage.observe(lifecycleOwner) {
+        authError = it
     }
 
     var password by remember { mutableStateOf("") }
@@ -89,7 +91,7 @@ fun ChangePasswordScreen(
         if (password.isEmpty()) {
             isPasswordError = true
             passwordErrorMessage = context.getString(R.string.empty_password_warning)
-        } else if (password.length < 6 ) {
+        } else if (password.length < 6) {
             isPasswordError = true
             passwordErrorMessage = context.getString(R.string.password_length_warning)
         } else if (!pattern.matcher(password).matches()) {
@@ -124,7 +126,7 @@ fun ChangePasswordScreen(
 
     Column(
         Modifier
-            .padding(vertical = 16.dp , horizontal = 32.dp)
+            .padding(vertical = 16.dp, horizontal = 32.dp)
             .fillMaxSize()
     ) {
         OutlinedTextField(
@@ -290,11 +292,9 @@ fun ChangePasswordScreen(
         Column {
             Button(
                 onClick = {
-                    authViewModel.password.value = password
-                    authViewModel.oldPassword.value = oldPassword
-                    onClick()
+                    showConfirmationDialog = true
                 },
-                enabled = !isPasswordError && !isOldPasswordError && !isConfirmPasswordError  && password.isNotEmpty() && oldPassword.isNotEmpty() && confirmPassword.isNotEmpty(),
+                enabled = !isPasswordError && !isOldPasswordError && !isConfirmPasswordError && password.isNotEmpty() && oldPassword.isNotEmpty() && confirmPassword.isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
@@ -308,16 +308,37 @@ fun ChangePasswordScreen(
             }
         }
     }
-    if (isLoading) {
-        LoadingScreen()
-    }
+    ConfirmationDialog(
+        showDialog = showConfirmationDialog,
+        title = stringResource(R.string.change_password),
+        text = stringResource(R.string.change_password_confirmation),
+        onConfirm = {
+            authViewModel.password.value = password
+            authViewModel.oldPassword.value = oldPassword
+
+            authViewModel.updatePassword(
+                oldEmail = oldEmail,
+                onUpdateComplete = {
+                    Toast.makeText(
+                        context,
+                        R.string.password_update_successfully, Toast.LENGTH_SHORT
+                    ).show()
+                    navigateBack()
+                },
+            )
+            showConfirmationDialog = false
+        },
+        onCancel = {
+            showConfirmationDialog = false
+        }
+    )
     if (authError.isNotEmpty()) {
         ErrorDialog(
             showDialog = showDialog,
             errorMsg = authError,
             onDismiss =
             {
-                isLoading = false
+                authError = ""
                 showDialog = false
             }
         )

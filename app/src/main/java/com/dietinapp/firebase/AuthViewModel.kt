@@ -142,7 +142,6 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
     fun updatePassword(
         oldEmail: String,
         onUpdateComplete: () -> Unit,
-        onUpdateError: (String?) -> Unit
     ) {
         authRepository.loginCustom(
             email = oldEmail,
@@ -150,21 +149,15 @@ class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
             onAuthComplete = { result ->
                 _isLoading.value = false
                 authRepository.updatePassword(
-                    password.value.toString(), onUpdateComplete, onUpdateError
+                    password.value.toString(), onUpdateComplete,
+                    onUpdateError = {
+                        _errorMessage.value = it.toString()
+                    }
                 )
             },
             onAuthError = {
-                onUpdateError(it)
+                _errorMessage.value = it.toString()
             }
-        )
-    }
-
-    fun updateEmail(
-        onUpdateComplete: () -> Unit,
-        onUpdateError: (String?) -> Unit
-    ) {
-        authRepository.updateEmail(
-            email.value.toString(), onUpdateComplete, onUpdateError
         )
     }
 

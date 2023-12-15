@@ -51,11 +51,6 @@ class UserPreferenceViewModel (private val pref: UserPreference) : ViewModel() {
         }
     }
 
-    fun saveEmail(email: String) {
-        viewModelScope.launch {
-            pref.saveOnlyEmail(email)
-        }
-    }
 
     fun reloadToken(token: String){
         viewModelScope.launch {

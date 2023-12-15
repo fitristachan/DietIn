@@ -14,14 +14,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,7 +64,6 @@ fun ProfileScreen(
     userPreferenceViewModel: UserPreferenceViewModel,
     navigateToHistory: () -> Unit,
     navigateToChangeUsername: () -> Unit,
-    navigateToChangeEmail: () -> Unit,
     navigateToChangePassword: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -86,43 +87,65 @@ fun ProfileScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            if (photo.isEmpty() || photo == "" || photo == "null") {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .clip(shape = CircleShape)
-                        .border(5.dp, MaterialTheme.colorScheme.secondary, CircleShape)
-                        .wrapContentSize()
-                        .clickable(
-                            enabled = true,
-                            onClick = {
-                                showPhotoDialog = true
-                            }
-                        ),
-                ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clickable(
+                        enabled = true,
+                        onClick = {
+                            showPhotoDialog = true
+                        }
+                    ),
+            ) {
+                if (photo.isEmpty() || photo == "" || photo == "null") {
                     Image(
                         painter = painterResource(R.drawable.ic_avatar),
                         contentDescription = username,
                         modifier = Modifier
                             .clip(shape = CircleShape)
-                            .size(80.dp)
+                            .border(5.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                            .size(70.dp)
+                            .clickable(
+                                enabled = true,
+                                onClick = {
+                                    showPhotoDialog = true
+                                }
+                            )
+
+                    )
+                } else {
+                    AsyncImage(
+                        model = photo.toUri(),
+                        contentDescription = username,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(70.dp)
+                            .clip(shape = CircleShape)
+                            .clickable(
+                                enabled = true,
+                                onClick = {
+                                    showPhotoDialog = true
+                                }
+                            )
                     )
                 }
-            } else {
-                AsyncImage(
-                    model = photo.toUri(),
-                    contentDescription = username,
-                    contentScale = ContentScale.Crop,
+                IconButton(
+                    onClick = { showPhotoDialog = true },
+                    colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier
-                        .size(70.dp)
-                        .clip(shape = CircleShape)
-                        .clickable(
-                            enabled = true,
-                            onClick = {
-                                showPhotoDialog = true
-                            }
-                        )
-                )
+                        .size(25.dp)
+                        .clip(RoundedCornerShape(20))
+                        .align(Alignment.BottomStart)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_edit),
+                        contentDescription = username,
+                        tint = MaterialTheme.colorScheme.secondaryContainer,
+                        modifier = Modifier
+                            .size(15.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.size(16.dp))
@@ -167,17 +190,6 @@ fun ProfileScreen(
                         itemIcon = Icons.Filled.Person,
                         onClick = {
                             navigateToChangeUsername()
-                        }
-                    )
-                }
-
-                item {
-                    ProfileItemVector(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        itemTitle = stringResource(id = R.string.email),
-                        itemIcon = Icons.Filled.Email,
-                        onClick = {
-                            navigateToChangeEmail()
                         }
                     )
                 }

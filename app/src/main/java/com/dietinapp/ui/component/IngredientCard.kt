@@ -10,16 +10,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dietinapp.R
 
 @Composable
 fun IngredientCard(
     modifier: Modifier,
     ingredientName: String,
     status: String
-){
+) {
     val color =
-        if (status == "Rendah Lektin") MaterialTheme.colorScheme.primary
+        if (status == stringResource(id = R.string.free_lectine)) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.tertiary
 
     Card(
@@ -39,6 +41,7 @@ fun IngredientCard(
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 24.dp, horizontal = 16.dp))
+                .padding(vertical = 20.dp, horizontal = 16.dp)
+        )
     }
 }

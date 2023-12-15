@@ -48,7 +48,8 @@ fun ArticleCard(
     ) {
         Row(
             modifier = Modifier
-                .padding(8.dp),
+                .padding(start = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
@@ -112,12 +113,9 @@ fun ArticleCard(
 
             Row (
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End,
                 modifier = Modifier.weight(1f)
             ){
-                Spacer(
-                    modifier = Modifier
-                        .widthIn(min = 8.dp)
-                )
                 AsyncImage(
                     model = photo,
                     contentDescription = title,
@@ -125,6 +123,7 @@ fun ArticleCard(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .size(100.dp)
+                        .padding(vertical = 4.dp)
                 )
             }
         }

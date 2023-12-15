@@ -5,12 +5,12 @@
     <string name="menu_profile">Profil</string>
     <string name="title_activity_on_boarding">OnBoarding</string>
     <string name="title_activity_auth">AuthActivity</string>
-    <string name="menu_scan">Scan Kadar Lektin</string>
+    <string name="menu_scan">Scan Kandungan Lektin</string>
     <string name="skip_button">Skip</string>
     <string name="first_onboarding_title">Selamat Datang di DietIn</string>
     <string name="first_onboarding_detail">Temukan kandungan lektin tersembunyi dalam makanan Anda dan buka jalan menuju gaya hidup lebih sehat.</string>
     <string name="second_onboarding_detail">Tersedia pemindaian makanan untuk mempelajari kandungan lektin dan membuat pilihan diet yang bijak.</string>
-    <string name="second_onboarding_title">Jelajahi Kadar Lektin</string>
+    <string name="second_onboarding_title">Jelajahi Kandungan Lektin</string>
     <string name="second_onboarding_button">Lanjutkan</string>
     <string name="username">Username</string>
     <string name="email">Email</string>
@@ -39,7 +39,7 @@
     <string name="history">Riwayat Terkini</string>
     <string name="see_more">Lihat lebih banyak</string>
     <string name="lectine_article">Seputar Lektin</string>
-    <string name="low_lectine">Rendah Lektin</string>
+    <string name="free_lectine">Bebas Lektin</string>
     <string name="personal">Personal</string>
     <string name="diet_recommendation">Rekomendasi Diet</string>
     <string name="about_us">Tentang Kami</string>
@@ -63,7 +63,7 @@
     <string name="failed_load_bitmap">Failed to load image bitmap.</string>
     <string name="unknown_index">Maaf kami tidak dapat mendeteksi gambar, mohon ulang kembali.</string>
     <string name="open_gallery">Buka Galeri</string>
-    <string name="high_lectine">Tinggi Lektin</string>
+    <string name="contain_lectine">Berisi Lektin</string>
     <string name="ingredients">Daftar Bahan</string>
     <string name="local">local</string>
     <string name="try_again_message">Coba Lagi</string>
@@ -98,4 +98,7 @@
     <string name="coming_soon">Segera rilis!!!</string>
     <string name="email_update_successfully">Email berhasil diperbarui</string>
     <string name="old_password_empty_warning">Password lama harus diisi</string>
+    <string name="change_password_confirmation">Apakah Anda yakin ingin mengubah password?</string>
+    <string name="app_slogan">Your Lectin Diet Assistant</string>
+    <string name="filter_today">Hari ini</string>
 </resources>

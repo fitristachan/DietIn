@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
-import com.dietinapp.ml.ModelActivation153Cleaned9392V4
+import com.dietinapp.ml.IndonesianFoods
 import com.dietinapp.utils.uriToBitmap
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
@@ -14,7 +14,7 @@ import java.nio.ByteOrder
 fun processImage(context: Context, imageUri: Uri?, callback: (Int) -> Unit) {
     imageUri?.let { uri ->
         val imageBitmap = uriToBitmap(context, uri)
-        val model = ModelActivation153Cleaned9392V4.newInstance(context)
+        val model = IndonesianFoods.newInstance(context)
 
         if (imageBitmap != null) {
             val downsampledBitmap = Bitmap.createScaledBitmap(imageBitmap, 299, 299, true)
@@ -46,7 +46,7 @@ fun processImage(context: Context, imageUri: Uri?, callback: (Int) -> Unit) {
             inputFeature0.loadBuffer(byteBuffer)
 
             // Runs model inference and gets result.
-            val outputs: ModelActivation153Cleaned9392V4.Outputs = model.process(inputFeature0)
+            val outputs: IndonesianFoods.Outputs = model.process(inputFeature0)
             val outputFeature0: TensorBuffer = outputs.outputFeature0AsTensorBuffer
             val confidences = outputFeature0.floatArray
 

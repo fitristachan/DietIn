@@ -93,15 +93,6 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
         }
     }
 
-    suspend fun saveOnlyEmail(email: String) {
-        dataStore.edit { preferences ->
-            preferences[this.email] = ""
-        }
-        dataStore.edit { preferences ->
-            preferences[this.email] = email
-        }
-    }
-
 
     suspend fun deleteAll() {
         dataStore.edit { preferences ->

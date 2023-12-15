@@ -51,7 +51,6 @@ import com.dietinapp.ui.component.TopBar
 import com.dietinapp.ui.screen.detail.ArticleScreen
 import com.dietinapp.ui.screen.history.HistoryScreen
 import com.dietinapp.ui.component.ErrorDialog
-import com.dietinapp.ui.screen.profile.ChangeEmailScreen
 import com.dietinapp.ui.screen.profile.ChangePasswordScreen
 import com.dietinapp.ui.screen.profile.ChangeUsernameScreen
 import com.google.firebase.Firebase
@@ -112,8 +111,6 @@ fun DietinApp(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var sessionEndMessage by remember { mutableStateOf("") }
-    var emailUpdateError by remember { mutableStateOf("") }
-    var passwordUpdateError by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
     val expirationTime = authViewModel.expirationTokenTimeStamp.collectAsState()
@@ -143,14 +140,8 @@ fun DietinApp(
     }
 
     var showDialog by remember { mutableStateOf(false) }
-    var showEmailErrorDialog by remember { mutableStateOf(false) }
-    var showPasswordErrorDialog by remember { mutableStateOf(false) }
     if (sessionEndMessage.isNotEmpty()) {
         showDialog = true
-    } else if (emailUpdateError.isNotEmpty()){
-        showEmailErrorDialog = true
-    } else if (passwordUpdateError.isNotEmpty()){
-        showPasswordErrorDialog = true
     }
 
     Scaffold(
@@ -162,7 +153,6 @@ fun DietinApp(
                 && currentRoute != DietinScreen.Article.route
                 && currentRoute != DietinScreen.ChangeUsername.route
                 && currentRoute != DietinScreen.ChangePassword.route
-                && currentRoute != DietinScreen.ChangeEmail.route
 
             ) {
                 BottomBar(navController)
@@ -187,9 +177,6 @@ fun DietinApp(
                     }
                     DietinScreen.ChangePassword.route -> {
                         text = stringResource(R.string.change_password)
-                    }
-                    DietinScreen.ChangeEmail.route -> {
-                        text = stringResource(R.string.change_email)
                     }
                 }
                 TopBar(
@@ -248,10 +235,6 @@ fun DietinApp(
                     },
                     navigateToChangeUsername = {
                         navController.navigate(DietinScreen.ChangeUsername.route)
-                    },
-                    navigateToChangeEmail = {
-                        val emailRoute = DietinScreen.ChangeEmail.createRoute(email)
-                        navController.navigate(emailRoute)
                     },
                     navigateToChangePassword = {
                         navController.navigate(DietinScreen.ChangePassword.route)
@@ -323,68 +306,16 @@ fun DietinApp(
                     articleId = articleId!!,
                 )
             }
-            composable(
-                route = DietinScreen.ChangeEmail.route,
-                arguments = listOf(
-                    navArgument("email") { type = NavType.StringType }
-                )
-            ) {
-                val oldEmail = it.arguments?.getString("email")
-                ChangeEmailScreen(
-                    oldEmail = oldEmail!!,
-                    authViewModel = authViewModel,
-                    onClick = {
-                        val newEmail = authViewModel.email.value
-                        authViewModel.updateEmail(
-                            onUpdateComplete = {
-                                userPreferenceViewModel.saveEmail(newEmail.toString())
-                                Toast.makeText(context,
-                                    R.string.email_update_successfully, Toast.LENGTH_SHORT).show()
-                                navController.navigateUp() },
-                            onUpdateError = {emailError ->
-                                emailUpdateError = emailError.toString()
-//                                Toast.makeText(context, emailError.toString(), Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                )
-                ErrorDialog(
-                    showDialog = showEmailErrorDialog,
-                    errorMsg = emailUpdateError,
-                    onDismiss =
-                    {
-                        emailUpdateError = ""
-                        showEmailErrorDialog = false
-                    }
-                )
-            }
+
             composable(DietinScreen.ChangePassword.route)
              {
                 ChangePasswordScreen(
                     authViewModel = authViewModel,
-                    onClick = {
-                        authViewModel.updatePassword(
-                            oldEmail = email,
-                            onUpdateComplete = {
-                                Toast.makeText(context,
-                                   R.string.password_update_successfully, Toast.LENGTH_SHORT).show()
-                                navController.navigateUp() },
-                            onUpdateError = {
-                                passwordUpdateError = it.toString()
-//                                Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT).show()
-                            }
-                        )
+                    oldEmail = email,
+                    navigateBack = {
+                        navController.navigateUp()
                     }
                 )
-                 ErrorDialog(
-                     showDialog = showPasswordErrorDialog,
-                     errorMsg = passwordUpdateError,
-                     onDismiss =
-                     {
-                         passwordUpdateError = ""
-                         showPasswordErrorDialog = false
-                     }
-                 )
             }
             composable(
                 route = DietinScreen.ChangeUsername.route) {

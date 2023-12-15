@@ -76,7 +76,7 @@ fun DetailScreen(
     var ingredients by remember { mutableStateOf<List<IngredientsItem>>(emptyList()) }
     var foodPhoto by remember { mutableStateOf<Uri?>(null) }
     val color =
-        if (foodStatus == stringResource(R.string.low_lectine)) MaterialTheme.colorScheme.primary
+        if (foodStatus == stringResource(R.string.free_lectine)) MaterialTheme.colorScheme.primary
         else MaterialTheme.colorScheme.tertiary
 
     var isLoading by remember { mutableStateOf(false) }
@@ -87,7 +87,7 @@ fun DetailScreen(
         val label = recipes[scanId]
         foodName = label.name
         foodStatus =
-            if (!label.status) stringResource(R.string.low_lectine) else stringResource(R.string.high_lectine)
+            if (!label.status) stringResource(R.string.free_lectine) else stringResource(R.string.contain_lectine)
         ingredients = label.ingredients
         foodPhoto = imageFileInGallery.value.toUri()
     } else if (historyId != stringResource(R.string.local)) {
@@ -112,7 +112,7 @@ fun DetailScreen(
             }
         }
         foodStatus =
-            if (!statusBoolean) stringResource(R.string.low_lectine) else stringResource(R.string.high_lectine)
+            if (!statusBoolean) stringResource(R.string.free_lectine) else stringResource(R.string.contain_lectine)
     }
 
     var showDialog by remember { mutableStateOf(false) }
@@ -254,8 +254,8 @@ fun DetailScreen(
                     IngredientCard(
                         modifier = modifier,
                         ingredientName = ingredient.ingredientName,
-                        status = if (!ingredient.ingredientLectineStatus) stringResource(R.string.low_lectine) else stringResource(
-                            R.string.high_lectine
+                        status = if (!ingredient.ingredientLectineStatus) stringResource(R.string.free_lectine) else stringResource(
+                            R.string.contain_lectine
                         )
                     )
                 }

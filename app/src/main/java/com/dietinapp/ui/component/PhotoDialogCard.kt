@@ -98,7 +98,7 @@ fun PhotoDialogCard(
                     onClick = { onDismiss() },
                     modifier = Modifier
                         .align(Alignment.End)
-                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .padding(top = 8.dp, end = 16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Close,
