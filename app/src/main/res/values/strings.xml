@@ -89,7 +89,7 @@
     <string name="delete_history_button">Hapus Riwayat</string>
     <string name="delete_confirmation_text">Apakah Anda yakin ingin menghapus %1$s?</string>
     <string name="delete_confirmation_title">Hapus Riwayat</string>
-    <string name="chooseNewPhoto">Pilih Foto Baru</string>
+    <string name="choose_new_photo">Pilih Foto</string>
     <string name="change_photo">Ubah Foto</string>
     <string name="change_photo_successfully">Foto berhasil diperbarui</string>
     <string name="password_update_successfully">Password berhasil diperbarui</string>

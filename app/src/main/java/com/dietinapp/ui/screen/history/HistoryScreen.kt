@@ -124,6 +124,8 @@ fun HistoryScreen(
                             isFreePressed = false
                             queryDate = ""
                             queryStatus = null
+                        } else {
+                            isAllPressed = false
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -314,9 +316,11 @@ fun HistoryScreen(
                         if (!isContainPressed) {
                             isContainPressed = true
                             isFreePressed = false
+                            isAllPressed = false
                             queryStatus = true
                         } else {
                             isContainPressed = false
+                            isAllPressed = false
                             queryStatus = null
                         }
                     },

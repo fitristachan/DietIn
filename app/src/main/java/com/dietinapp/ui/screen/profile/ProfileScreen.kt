@@ -41,10 +41,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.dietinapp.R
 import com.dietinapp.database.datastore.UserPreferenceViewModel
 import com.dietinapp.firebase.AuthViewModel
+import com.dietinapp.retrofit.data.viewmodel.HistoryPagingViewModel
+import com.dietinapp.retrofit.data.viewmodel.HistoryPagingViewModelFactory
 import com.dietinapp.ui.activity.AuthActivity
 import com.dietinapp.ui.activity.findActivity
 import com.dietinapp.ui.component.AboutUsCard
@@ -62,6 +65,9 @@ fun ProfileScreen(
     email: String,
     authViewModel: AuthViewModel,
     userPreferenceViewModel: UserPreferenceViewModel,
+    historyPagingViewModel: HistoryPagingViewModel = viewModel(
+        factory = HistoryPagingViewModelFactory.getInstance(LocalContext.current)
+    ),
     navigateToHistory: () -> Unit,
     navigateToChangeUsername: () -> Unit,
     navigateToChangePassword: () -> Unit,
@@ -294,6 +300,7 @@ fun ProfileScreen(
                     authViewModel.signOut(
                         userPreferenceViewModel,
                         onSignOutComplete = {
+                            historyPagingViewModel.deleteHistories()
                             context.findActivity()?.finish()
                             context.startActivity(
                                 Intent(

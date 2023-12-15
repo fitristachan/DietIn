@@ -100,6 +100,7 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
             preferences[this.session] = false
             preferences[this.username] = ""
             preferences[this.email] = ""
+            preferences[this.photo] = ""
         }
     }
 

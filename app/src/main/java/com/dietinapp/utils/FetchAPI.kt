@@ -2,7 +2,6 @@ package com.dietinapp.utils
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.dietinapp.model.processImage
@@ -12,6 +11,9 @@ import com.dietinapp.retrofit.response.IngredientsItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 
 val imageFileInGallery = mutableStateOf("")
@@ -20,23 +22,24 @@ fun processAndFetch(
     imageUri: Uri,
     context: Context,
     historyViewModel: HistoryViewModel,
-    onProcessAdditional: () -> Unit,
-    navigateToDetail: (Int) -> Unit
+    navigateToDetail: (Int) -> Unit,
+    onWait: () -> Unit,
 ) {
+    CoroutineScope(Dispatchers.IO).launch {
+        val result = suspendCoroutine<Int?> { continuation ->
+            processImage(context, imageUri) { processedResult ->
+                continuation.resume(processedResult)
+            }
+        }
 
-    processImage(context, imageUri) { result ->
-        CoroutineScope(Dispatchers.IO).launch {
+        if (result != null) {
             val recipes = readRecipesFromJson(context)
             val foodName = recipes[result].name
             val lectineStatus = recipes[result].status
-
             val ingredients: List<IngredientsItem> = recipes[result].ingredients
-
 
             val foodPhoto = uriToFile(imageUri, context).reduceFileImage()
             imageFileInGallery.value = imageUri.toString()
-
-            Log.d("Image File", "showImage: ${foodPhoto.path}")
 
             historyViewModel.addHistory(
                 foodPhoto = foodPhoto,
@@ -44,42 +47,58 @@ fun processAndFetch(
                 lectineStatus = lectineStatus,
                 ingredients = ingredients
             )
+
+            withContext(Dispatchers.Main) {
+                if (result in 0..15) {
+                    navigateToDetail(result)
+                }
+            }
+        } else {
+            onWait()
         }
-
-        onProcessAdditional()
-        navigateToDetail(result)
-
     }
-
 }
+
 
 fun processAndFetchCamera(
     imageUri: Uri,
     context: Context,
     historyViewModel: HistoryViewModel,
-    onProcessAdditional: () -> Unit,
     navigateToDetail: (Int) -> Unit,
+    onWait: () -> Unit,
 ) {
-    processImage(context, imageUri) { result ->
-        val recipes = readRecipesFromJson(context)
-        val foodName = recipes[result].name
-        val lectineStatus = recipes[result].status
-
-        val ingredients: List<IngredientsItem> = recipes[result].ingredients
-
-        saveToGallery(context, imageUri) { file ->
-            val foodPhoto = file!!.reduceFileImage()
-            imageFileInGallery.value = file.toUri().toString()
-
-            historyViewModel.addHistory(
-                foodPhoto = foodPhoto,
-                foodName = foodName,
-                lectineStatus = lectineStatus,
-                ingredients = ingredients
-            )
+    CoroutineScope(Dispatchers.IO).launch {
+        val result = suspendCoroutine<Int?> { continuation ->
+            processImage(context, imageUri) { processedResult ->
+                continuation.resume(processedResult)
+            }
         }
 
-        onProcessAdditional()
-        navigateToDetail(result)
+        if (result != null) {
+            val recipes = readRecipesFromJson(context)
+            val foodName = recipes[result].name
+            val lectineStatus = recipes[result].status
+            val ingredients: List<IngredientsItem> = recipes[result].ingredients
+
+            saveToGallery(context, imageUri) { file ->
+                val foodPhoto = file!!.reduceFileImage()
+                imageFileInGallery.value = file.toUri().toString()
+
+                historyViewModel.addHistory(
+                    foodPhoto = foodPhoto,
+                    foodName = foodName,
+                    lectineStatus = lectineStatus,
+                    ingredients = ingredients
+                )
+            }
+
+            withContext(Dispatchers.Main) {
+                if (result in 0..15) {
+                    navigateToDetail(result)
+                }
+            }
+        } else {
+            onWait()
+        }
     }
 }

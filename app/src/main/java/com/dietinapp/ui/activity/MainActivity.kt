@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,6 +38,8 @@ import com.dietinapp.database.datastore.UserPreferenceViewModelFactory
 import com.dietinapp.database.datastore.dataStore
 import com.dietinapp.firebase.AuthViewModel
 import com.dietinapp.firebase.AuthViewModelFactory
+import com.dietinapp.retrofit.data.viewmodel.HistoryPagingViewModel
+import com.dietinapp.retrofit.data.viewmodel.HistoryPagingViewModelFactory
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModelFactory
 import com.dietinapp.ui.navigation.DietinScreen
@@ -53,23 +55,11 @@ import com.dietinapp.ui.screen.history.HistoryScreen
 import com.dietinapp.ui.component.ErrorDialog
 import com.dietinapp.ui.screen.profile.ChangePasswordScreen
 import com.dietinapp.ui.screen.profile.ChangeUsernameScreen
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
-    private lateinit var auth: FirebaseAuth
-    private val authViewModel by viewModels<AuthViewModel> {
-        AuthViewModelFactory.getInstance(application)
-    }
-
-    private val historyViewModel by viewModels<HistoryViewModel> {
-        HistoryViewModelFactory.getInstance(application)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        auth = Firebase.auth
 
         val pref = UserPreference.getInstance(application.dataStore)
         val userPreferenceViewModel =
@@ -86,8 +76,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     DietinApp(
-                        historyViewModel = historyViewModel,
-                        authViewModel = authViewModel,
                         userPreferenceViewModel = userPreferenceViewModel,
                     )
                 }
@@ -100,8 +88,15 @@ class MainActivity : ComponentActivity() {
 fun DietinApp(
     modifier: Modifier = Modifier,
     userPreferenceViewModel: UserPreferenceViewModel,
-    authViewModel: AuthViewModel,
-    historyViewModel: HistoryViewModel,
+    authViewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory.getInstance(LocalContext.current)
+    ),
+    historyViewModel: HistoryViewModel = viewModel(
+        factory = HistoryViewModelFactory.getInstance(LocalContext.current)
+    ),
+    historyPagingViewModel: HistoryPagingViewModel = viewModel(
+        factory = HistoryPagingViewModelFactory.getInstance(LocalContext.current)
+    ),
     navController: NavHostController = rememberNavController(),
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -120,7 +115,15 @@ fun DietinApp(
         authViewModel.tokenValidationCheck(
             userPreferenceViewModel = userPreferenceViewModel,
             onSignOutComplete = {
+                historyPagingViewModel.deleteHistories()
                 sessionEndMessage = "Sesi Anda telah berakhir. Silakan login kembali."
+                context.findActivity()?.finish()
+                context.startActivity(
+                    Intent(
+                        context,
+                        AuthActivity::class.java
+                    )
+                )
             },
             onError = {
                 errorMessage = it
@@ -199,7 +202,7 @@ fun DietinApp(
                         navController.navigate(DietinScreen.History.route)
                     },
                     navigateToDetail = {
-                        val route = DietinScreen.Detail.createRoute(scanId = 0, it)
+                        val route = DietinScreen.Detail.createRoute(it)
                         navController.navigate(route)
                     },
                     navigateToArticle = {
@@ -260,7 +263,7 @@ fun DietinApp(
                 ScanScreen(
                     historyViewModel = historyViewModel,
                     navigateToDetail = {
-                        val route = DietinScreen.Detail.createRoute(it, "local")
+                        val route = DietinScreen.Detail.createRoute(it)
                         navController.navigate(route)
                     }
                 )
@@ -269,7 +272,7 @@ fun DietinApp(
                 HistoryScreen(
                     modifier = Modifier,
                     navigateToDetail = {
-                        val route = DietinScreen.Detail.createRoute(scanId = 0, it)
+                        val route = DietinScreen.Detail.createRoute(it)
                         navController.navigate(route)
                     },
                 )
@@ -277,16 +280,13 @@ fun DietinApp(
             composable(
                 route = DietinScreen.Detail.route,
                 arguments = listOf(
-                    navArgument("scanId") { type = NavType.IntType },
                     navArgument("historyId") { type = NavType.StringType }
                 )
             ) {
-                val scanId = it.arguments?.getInt("scanId") ?: 0
                 val historyId =
-                    it.arguments?.getString("historyId") ?: stringResource(R.string.local)
+                    it.arguments?.getString("historyId") ?: ""
                 DetailScreen(
                     modifier,
-                    scanId = scanId,
                     historyId = historyId,
                     historyViewModel = historyViewModel,
                     navigateBack = {

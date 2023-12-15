@@ -75,7 +75,7 @@ import com.dietinapp.utils.processAndFetchCamera
 fun ScanScreen(
     modifier: Modifier = Modifier,
     historyViewModel: HistoryViewModel,
-    navigateToDetail: (Int) -> Unit
+    navigateToDetail: (String) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -107,12 +107,14 @@ fun ScanScreen(
                 imageUri = uri,
                 context = context,
                 historyViewModel = historyViewModel,
-                onProcessAdditional = {
-                    isLoading = false
+                onWait = {
+                  isLoading = true
                 },
-                navigateToDetail = {
-                    isLoading = false
-                    navigateToDetail(it)
+                navigateToDetail = { it: Int? ->
+                   if (it != null){
+                        isLoading = false
+                        navigateToDetail(it.toString())
+                   }
                 }
             )
         } else {
@@ -272,11 +274,12 @@ fun ScanScreen(
                                             imageUri = imageUri,
                                             context = context,
                                             historyViewModel = historyViewModel,
-                                            onProcessAdditional = {
-                                                deleteTempFile(photoFile)
+                                            onWait = {
+                                                isLoading = true
                                             },
                                             navigateToDetail = {
-                                                navigateToDetail(it)
+                                                deleteTempFile(photoFile)
+                                                navigateToDetail(it.toString())
                                             }
                                         )
                                     }

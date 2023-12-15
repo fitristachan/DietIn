@@ -60,7 +60,6 @@ import com.google.gson.reflect.TypeToken
 @Composable
 fun DetailScreen(
     modifier: Modifier,
-    scanId: Int,
     historyId: String,
     errorMessage: String,
     historyViewModel: HistoryViewModel,
@@ -82,15 +81,15 @@ fun DetailScreen(
     var isLoading by remember { mutableStateOf(false) }
 
 
-    if (historyId == stringResource(R.string.local)) {
+    if (historyId.length <= 2) {
         val recipes = remember { readRecipesFromJson(context) }
-        val label = recipes[scanId]
+        val label = recipes[historyId.toInt()]
         foodName = label.name
         foodStatus =
             if (!label.status) stringResource(R.string.free_lectine) else stringResource(R.string.contain_lectine)
         ingredients = label.ingredients
         foodPhoto = imageFileInGallery.value.toUri()
-    } else if (historyId != stringResource(R.string.local)) {
+    } else if (historyId.length > 2) {
         isLoading = historyViewModel.isLoading.collectAsState().value
 
         var statusBoolean by remember { mutableStateOf(false) }
@@ -151,7 +150,7 @@ fun DetailScreen(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.back_button))
             }
-            if (historyId != stringResource(R.string.local)) {
+            if (historyId.length > 2) {
                 IconButton(
                     onClick = { showDeleteDialog = true },
                     colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.tertiary),

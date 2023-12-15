@@ -26,6 +26,11 @@ class HistoriesPagingRepository(
             }).flow
     }
 
+    fun deleteHistories(){
+        historiesPagingDatabase.historiesPagingDao().deleteAll()
+        historiesPagingDatabase.remoteKeysDao().deleteRemoteKeys()
+    }
+
     companion object {
         @Volatile
         private var instance: HistoriesPagingRepository? = null

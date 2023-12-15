@@ -12,8 +12,8 @@ sealed class DietinScreen (val route: String) {
     object ChangePassword : DietinScreen("password")
 
     object History: DietinScreen("history")
-    object Detail : DietinScreen("home/{scanId}{historyId}") {
-        fun createRoute(scanId: Int, historyId: String): String = "home/$scanId$historyId"
+    object Detail : DietinScreen("home/{historyId}") {
+        fun createRoute(historyId: String): String = "home/${historyId}"
     }
     object Article : DietinScreen("home/{articleId}") {
         fun createRoute(articleId: Int): String = "home/$articleId"

@@ -11,6 +11,7 @@ import com.dietinapp.retrofit.data.repository.HistoriesPagingRepository
 import com.dietinapp.retrofit.response.HistoryItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.launch
 
 class HistoryPagingViewModel(
     private val historiesPagingRepository: HistoriesPagingRepository
@@ -25,6 +26,12 @@ class HistoryPagingViewModel(
             foodName = foodName, createdAt = createdAt, status = status)
             .take(5)
             .cachedIn(viewModelScope)
+    }
+
+    fun deleteHistories(){
+        viewModelScope.launch {
+            historiesPagingRepository.deleteHistories()
+        }
     }
 }
 

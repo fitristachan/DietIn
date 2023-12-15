@@ -136,7 +136,7 @@ fun PhotoDialogCard(
                         onClick = { launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
                     ) {
                         Text(
-                            text = stringResource(R.string.chooseNewPhoto),
+                            text = stringResource(R.string.choose_new_photo),
                             style = MaterialTheme.typography.bodySmall)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
