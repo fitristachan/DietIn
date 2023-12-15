@@ -1,7 +1,9 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-
+    id("kotlin-kapt")
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
 }
@@ -21,6 +23,14 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val localProperties = project.rootProject.file("local.properties")
+        val properties = Properties().apply {
+            load(localProperties.inputStream())
+        }
+
+        val baseUrl = properties.getProperty("BASE_URL")
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 
     buildTypes {
@@ -33,15 +43,16 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
         mlModelBinding = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -102,13 +113,30 @@ dependencies {
     //firebase
     implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
 
+    //label
+    implementation("com.google.code.gson:gson:2.8.8")
+
+    //retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation("androidx.exifinterface:exifinterface:1.3.6")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
+
+    //pagingroom
+    implementation("androidx.paging:paging-runtime:3.2.0-alpha06")
+    implementation("androidx.paging:paging-compose:1.0.0-alpha20")
+    implementation ("androidx.room:room-ktx:2.4.3")
+    kapt ("androidx.room:room-compiler:2.4.3")
+    implementation("androidx.room:room-paging:2.4.3")
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth:22.3.0")
     implementation("com.google.android.gms:play-services-auth:20.6.0")
-    implementation("com.google.firebase:firebase-firestore-ktx:24.9.1")
+    implementation("com.android.volley:volley:1.2.1")
 
 
     // Add the dependencies for any other desired Firebase products

@@ -1,0 +1,324 @@
+{
+    "data":[
+        {
+            "id":1,
+            "name":"Ayam Bakar",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Daging Ayam",
+                    "status": "low"
+                },
+                {
+                    "name": "Kedelai",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":2,
+            "name":"Bakso",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Daging",
+                    "status": "low"
+                },
+                {
+                    "name": "Tepung",
+                    "status": "low"
+                },
+                {
+                    "name": "Garam",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":3,
+            "name":"Bebek Goreng",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Daging Bebek",
+                    "status": "low"
+                },
+                {
+                    "name": "Minyak",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":4,
+            "name":"Burger",
+            "status": "high",
+            "ingredients": [
+                {
+                    "name": "Roti",
+                    "status": "low"
+                },
+                {
+                    "name": "Daging",
+                    "status": "low"
+                },
+                {
+                    "name": "Selada",
+                    "status": "low"
+                },
+                {
+                    "name": "Tomat",
+                    "status": "high"
+                }
+            ]
+        },
+        {
+            "id":5,
+            "name":"Gado-Gado",
+            "status": "high",
+            "ingredients": [
+                {
+                    "name": "Tauge",
+                    "status": "low"
+                },
+                {
+                    "name": "Cabai",
+                    "status": "high"
+                },
+                {
+                    "name": "Timun",
+                    "status": "low"
+                },
+                {
+                    "name": "Kacang Panjang",
+                    "status": "low"
+                },
+                {
+                    "name": "Kacang Tanah",
+                    "status": "high"
+                }
+            ]
+        },
+        {
+            "id":6,
+            "name":"Gudeg",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Santan Kelapa",
+                    "status": "low"
+                },
+                {
+                    "name": "Gula",
+                    "status": "low"
+                },
+                {
+                    "name": "Daun Salam",
+                    "status": "low"
+                },
+                {
+                    "name": "Nangka",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":7,
+            "name":"Ikan Bakar",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Ikan",
+                    "status": "low"
+                },
+                {
+                    "name": "Garam",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":8,
+            "name":"Martabak Manis",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Telur",
+                    "status": "low"
+                },
+                {
+                    "name": "Tepung",
+                    "status": "low"
+                },
+                {
+                    "name": "Gula",
+                    "status": "low"
+                },
+                {
+                    "name": "Susu",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":9,
+            "name":"Martabak Asin",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Telur",
+                    "status": "low"
+                },
+                {
+                    "name": "Tepung",
+                    "status": "low"
+                },
+                {
+                    "name": "Minyak",
+                    "status": "low"
+                },
+                {
+                    "name": "Daun Bawang",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":10,
+            "name":"Nasi Goreng",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Nasi",
+                    "status": "low"
+                },
+                {
+                    "name": "Telur",
+                    "status": "low"
+                },
+                {
+                    "name": "Kedelai",
+                    "status": "low"
+                },
+                {
+                    "name": "Minyak",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":11,
+            "name":"Omelette",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Telur",
+                    "status": "low"
+                },
+                {
+                    "name": "Keju",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":12,
+            "name":"Pempek",
+            "status": "low",
+            "ingredients": [
+                {
+                    "name": "Ikan",
+                    "status": "low"
+                },
+                {
+                    "name": "Tepung",
+                    "status": "low"
+                },
+                {
+                    "name": "Minyak",
+                    "status": "low"
+                }
+            ]
+        },
+        {
+            "id":13,
+            "name":"Rendang",
+            "status": "high",
+            "ingredients": [
+                {
+                    "name": "Daging Sapi",
+                    "status": "low"
+                },
+                {
+                    "name": "Santan Kelapa",
+                    "status": "low"
+                },
+                {
+                    "name": "Cabai",
+                    "status": "high"
+                }
+            ]
+        },
+        {
+            "id":14,
+            "name":"Sate",
+            "status": "high",
+            "ingredients": [
+                {
+                    "name": "Daging",
+                    "status": "low"
+                },
+                {
+                    "name": "Kedelai",
+                    "status": "high"
+                },
+                {
+                    "name": "Cabai",
+                    "status": "high"
+                },
+                {
+                    "name": "Kacang Tanah",
+                    "status": "high"
+                }
+            ]
+        },
+        {
+            "id":15,
+            "name":"Sayur Asem",
+            "status": "high",
+            "ingredients": [
+                {
+                    "name": "Kacang Panjang",
+                    "status": "low"
+                },
+                {
+                    "name": "Labu Siam",
+                    "status": "low"
+                },
+                {
+                    "name": "Melinjo",
+                    "status": "high"
+                },
+                {
+                    "name": "Daun Melinjo",
+                    "status": "high"
+                }
+            ]
+        },
+        {
+            "id":16,
+            "name":"Semur Jengkol",
+            "status": "high",
+            "ingredients": [
+                {
+                    "name": "Kedelai",
+                    "status": "high"
+                },
+                {
+                    "name": "Jengkol",
+                    "status": "high"
+                }
+            ]
+        }
+    ]
+}

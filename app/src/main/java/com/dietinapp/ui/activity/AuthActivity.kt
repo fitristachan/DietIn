@@ -3,16 +3,20 @@ package com.dietinapp.ui.activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -26,27 +30,30 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dietinapp.R
-import com.dietinapp.data.datastore.UserPreference
-import com.dietinapp.data.datastore.UserPreferenceViewModel
-import com.dietinapp.data.datastore.UserPreferenceViewModelFactory
-import com.dietinapp.data.datastore.dataStore
-import com.dietinapp.firebase.rememberFirebaseAuthLauncher
-import com.dietinapp.ui.activity.mainfeature.MainActivity
+import com.dietinapp.database.datastore.UserPreference
+import com.dietinapp.database.datastore.UserPreferenceViewModel
+import com.dietinapp.database.datastore.UserPreferenceViewModelFactory
+import com.dietinapp.database.datastore.dataStore
+import com.dietinapp.firebase.AuthViewModel
+import com.dietinapp.firebase.AuthViewModelFactory
 import com.dietinapp.ui.navigation.AuthScreen
 import com.dietinapp.ui.screen.login.LoginScreen
 import com.dietinapp.ui.screen.register.RegisterByGoogleScreen
 import com.dietinapp.ui.screen.register.RegisterScreen
 import com.dietinapp.ui.theme.DietInTheme
-import com.dietinapp.ui.component.LoadingScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Firebase
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import kotlin.coroutines.CoroutineContext
 
 class AuthActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
+    private val authViewModel by viewModels<AuthViewModel> {
+        AuthViewModelFactory.getInstance(application)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
@@ -65,8 +72,6 @@ class AuthActivity : ComponentActivity() {
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
                 finish()
-            } else if (session == false && auth.currentUser != null ){
-                auth.signOut()
             } else {
                 setContent {
                     DietInTheme {
@@ -75,7 +80,10 @@ class AuthActivity : ComponentActivity() {
                             modifier = Modifier.fillMaxSize(),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            Auth(auth = auth, userPreferenceViewModel = userPreferenceViewModel)
+                            Auth(
+                                userPreferenceViewModel = userPreferenceViewModel,
+                                authViewModel = authViewModel
+                            )
                         }
                     }
                 }
@@ -87,22 +95,21 @@ class AuthActivity : ComponentActivity() {
 @Composable
 fun Auth(
     modifier: Modifier = Modifier,
-    auth: FirebaseAuth,
+    authViewModel: AuthViewModel,
     userPreferenceViewModel: UserPreferenceViewModel,
     navController: NavHostController = rememberNavController(),
 ) {
-    var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val launcher = rememberFirebaseAuthLauncher(
-        onAuthComplete = { result ->
-            saveUserByGoogle(navController, userPreferenceViewModel, result)
-            isLoading = false
-        },
-        onAuthError = {
-            isLoading = false
-        }
-    )
+    val coroutineContext = rememberCoroutineScope().coroutineContext
     val token = stringResource(R.string.default_web_client_id)
+    val email = remember { mutableStateOf("") }
+
+    val launcher = rememberFirebaseAuthLauncher(
+        context = coroutineContext,
+        navController = navController,
+        authViewModel = authViewModel,
+        userPreferenceViewModel = userPreferenceViewModel
+    )
 
     NavHost(
         navController = navController,
@@ -114,10 +121,11 @@ fun Auth(
         composable(AuthScreen.Register.route) {
             RegisterScreen(
                 navigateToLogin = { navController.navigate(AuthScreen.Login.route) },
-                auth = auth,
-                onAuthComplete = { navController.navigate(AuthScreen.Login.route) },
+                authViewModel = authViewModel,
+                onClick = {
+                    authViewModel.registerByCustom(navController)
+                },
                 registerGoogle = {
-                    isLoading = true
                     val gso =
                         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestIdToken(token)
@@ -127,27 +135,21 @@ fun Auth(
                     launcher.launch(googleSignInClient.signInIntent)
                 }
             )
-            if (isLoading) {
-                LoadingScreen()
-            }
         }
 
         composable(
             route = AuthScreen.RegisterByGoogle.route,
             arguments = listOf(navArgument("email") { type = NavType.StringType }),
         ) {
-            val email = it.arguments?.getString("email") ?: ""
+            email.value = it.arguments?.getString("email") ?: ""
             RegisterByGoogleScreen(
-                email = email,
-                auth = auth,
-                onAuthComplete = {
-                    val gso =
-                        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken(token)
-                            .requestEmail()
-                            .build()
-                    val googleSignInClient = GoogleSignIn.getClient(context, gso)
-                    launcher.launch(googleSignInClient.signInIntent)
+                email = email.value,
+                authViewModel = authViewModel,
+                onClick = {
+                    authViewModel.registerByGoogle(
+                        navController,
+                        email.value
+                    )
                 },
             )
         }
@@ -155,12 +157,11 @@ fun Auth(
         composable(AuthScreen.Login.route) {
             LoginScreen(
                 navigateToRegister = { navController.navigate(AuthScreen.Register.route) },
-                auth = auth,
-                onAuthComplete = { result ->
-                    saveUserCustom(userPreferenceViewModel, result)
+                authViewModel = authViewModel,
+                onClick = {
+                    authViewModel.loginByCustom(userPreferenceViewModel)
                 },
                 loginGoogle = {
-                    isLoading = true
                     val gso =
                         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestIdToken(token)
@@ -170,42 +171,26 @@ fun Auth(
                     launcher.launch(googleSignInClient.signInIntent)
                 }
             )
-            if (isLoading) {
-                LoadingScreen()
-            }
         }
     }
 }
 
-private fun saveUserByGoogle(
+@Composable
+fun rememberFirebaseAuthLauncher(
+    context: CoroutineContext,
     navController: NavController,
-    userPreferenceViewModel: UserPreferenceViewModel,
-    result: AuthResult
-) {
-    if (result.user?.displayName == "" || result.user?.displayName == "Null" || result.user?.displayName == null) {
-        val email = result.user?.email.toString()
-        navController.navigate(AuthScreen.RegisterByGoogle.createRoute(email))
-    } else {
-        userPreferenceViewModel.saveToken(
-            token = result.user?.uid.toString(),
-            username = result.user?.displayName.toString(),
-            email = result.user?.email.toString(),
-            photo = result.user?.photoUrl.toString(),
-            session = true
-        )
-    }
-}
+    authViewModel: AuthViewModel,
+    userPreferenceViewModel: UserPreferenceViewModel
+): ManagedActivityResultLauncher<Intent, ActivityResult> {
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            authViewModel.googleLauncher(
+                result = result,
+                context = context,
+                navController = navController,
+                userPreferenceViewModel = userPreferenceViewModel
+            )
+        }
 
-private fun saveUserCustom(
-    userPreferenceViewModel: UserPreferenceViewModel,
-    result: AuthResult
-) {
-    userPreferenceViewModel.saveToken(
-        token = result.user?.uid.toString(),
-        username = result.user?.displayName.toString(),
-        email = result.user?.email.toString(),
-        photo = result.user?.photoUrl.toString(),
-        session = true
-    )
-
+    return launcher
 }
