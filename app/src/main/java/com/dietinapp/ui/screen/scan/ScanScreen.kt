@@ -311,10 +311,6 @@ fun ScanScreen(
                 }
             }
 
-            if (isLoading) {
-                LoadingScreen()
-            }
-
             LaunchedEffect(previewUseCase) {
                 val cameraProvider = context.getCameraProvider()
                 try {
@@ -331,6 +327,12 @@ fun ScanScreen(
                     Log.e("CameraCapture", "Failed to bind camera use cases", ex)
                 }
             }
+        }
+        if (isLoading) {
+            Box(modifier = Modifier.background(MaterialTheme.coloScheme.onBackground)){
+                LoadingScreen()
+            }
+
         }
     }
 }
