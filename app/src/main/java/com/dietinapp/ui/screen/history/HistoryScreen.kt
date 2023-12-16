@@ -283,6 +283,7 @@ fun HistoryScreen(
                         if (!isFreePressed) {
                             isFreePressed = true
                             isContainPressed = false
+                            isAllPressed = false
                             queryStatus = false
                         } else {
                             isFreePressed = false
@@ -320,7 +321,6 @@ fun HistoryScreen(
                             queryStatus = true
                         } else {
                             isContainPressed = false
-                            isAllPressed = false
                             queryStatus = null
                         }
                     },
