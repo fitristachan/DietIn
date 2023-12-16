@@ -96,35 +96,23 @@ class AuthRepository private constructor(
         email: String
     ) {
         var user = firebaseAuth.currentUser
+        user?.updatePassword(password)
+            ?.addOnCompleteListener { passwordUpdateTask ->
+                if (passwordUpdateTask.isSuccessful) {
+                    val userProfileChangeRequest = UserProfileChangeRequest.Builder()
+                        .setDisplayName(username)
+                        .build()
 
-        firebaseAuth.signOut() // Sign out the user first
-
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { signInTask ->
-                if (signInTask.isSuccessful) {
-                    user = firebaseAuth.currentUser // Update the user object after signing in
-
-                    user?.updatePassword(password)
-                        ?.addOnCompleteListener { passwordUpdateTask ->
-                            if (passwordUpdateTask.isSuccessful) {
-                                val userProfileChangeRequest = UserProfileChangeRequest.Builder()
-                                    .setDisplayName(username)
-                                    .build()
-
-                                user?.updateProfile(userProfileChangeRequest)
-                                    ?.addOnCompleteListener { profileUpdateTask ->
-                                        if (profileUpdateTask.isSuccessful) {
-                                            onAuthComplete()
-                                        } else {
-                                            onAuthError(profileUpdateTask.exception?.localizedMessage)
-                                        }
-                                    }
+                    user.updateProfile(userProfileChangeRequest)
+                        .addOnCompleteListener { profileUpdateTask ->
+                            if (profileUpdateTask.isSuccessful) {
+                                onAuthComplete()
                             } else {
-                                onAuthError(passwordUpdateTask.exception?.localizedMessage)
+                                onAuthError(profileUpdateTask.exception?.localizedMessage)
                             }
                         }
                 } else {
-                    onAuthError(signInTask.exception?.localizedMessage)
+                    onAuthError(passwordUpdateTask.exception?.localizedMessage)
                 }
             }
     }
@@ -152,7 +140,7 @@ class AuthRepository private constructor(
         username: String,
         onUpdateComplete: () -> Unit,
         onUpdateError: (String?) -> Unit
-    ){
+    ) {
         val user = firebaseAuth.currentUser
         val userProfileChangeRequest = UserProfileChangeRequest.Builder()
             .setDisplayName(username)
@@ -172,7 +160,7 @@ class AuthRepository private constructor(
         photo: Uri,
         onUpdateComplete: () -> Unit,
         onUpdateError: (String?) -> Unit
-    ){
+    ) {
         val user = firebaseAuth.currentUser
         val userProfileChangeRequest = UserProfileChangeRequest.Builder()
             .setPhotoUri(photo)
@@ -192,7 +180,7 @@ class AuthRepository private constructor(
         password: String,
         onUpdateComplete: () -> Unit,
         onUpdateError: (String?) -> Unit
-    ){
+    ) {
         val user = firebaseAuth.currentUser
         user?.updatePassword(password)
             ?.addOnCompleteListener { profileUpdateTask ->

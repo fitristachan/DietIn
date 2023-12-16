@@ -9,7 +9,9 @@ import com.dietinapp.retrofit.api.ApiService
 import com.dietinapp.retrofit.data.paging.HistoriesPagingDatabase
 import com.dietinapp.retrofit.data.paging.HistoriesRemoteMediator
 import com.dietinapp.retrofit.response.HistoryItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class HistoriesPagingRepository(
     private val historiesPagingDatabase: HistoriesPagingDatabase, private val apiService: ApiService
@@ -26,9 +28,11 @@ class HistoriesPagingRepository(
             }).flow
     }
 
-    fun deleteHistories(){
-        historiesPagingDatabase.historiesPagingDao().deleteAll()
-        historiesPagingDatabase.remoteKeysDao().deleteRemoteKeys()
+    suspend fun deleteHistories() {
+        withContext(Dispatchers.IO) {
+            historiesPagingDatabase.historiesPagingDao().deleteAll()
+            historiesPagingDatabase.remoteKeysDao().deleteRemoteKeys()
+        }
     }
 
     companion object {
