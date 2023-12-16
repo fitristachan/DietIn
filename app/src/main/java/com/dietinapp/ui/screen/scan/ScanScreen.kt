@@ -329,7 +329,7 @@ fun ScanScreen(
             }
         }
         if (isLoading) {
-            Box(modifier = Modifier.background(MaterialTheme.coloScheme.onBackground)){
+            Box(modifier = Modifier.background(MaterialTheme.colorScheme.onBackground)){
                 LoadingScreen()
             }
 
