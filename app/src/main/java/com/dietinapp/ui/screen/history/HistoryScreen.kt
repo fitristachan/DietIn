@@ -1,5 +1,6 @@
 package com.dietinapp.ui.screen.history
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,6 +59,13 @@ fun HistoryScreen(
         factory = HistoryPagingViewModelFactory.getInstance(LocalContext.current)
     )
 ) {
+    val configuration = LocalConfiguration.current
+    val columnCount = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        4
+    } else {
+        2
+    }
+
     var queryName by remember { mutableStateOf("") }
     var queryDate by remember { mutableStateOf("") }
     var queryStatus by remember { mutableStateOf<Boolean?>(null) }
@@ -350,7 +359,7 @@ fun HistoryScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Fixed(columnCount),
             userScrollEnabled = true,
         ) {
             items(historiesPagingItems.itemCount) { index ->

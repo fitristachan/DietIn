@@ -11,15 +11,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material.icons.Icons
@@ -87,89 +87,114 @@ fun PhotoDialogCard(
                 .background(MaterialTheme.colorScheme.onBackground.copy(0.3f)),
             contentAlignment = Alignment.Center
         ) {
-            Column(
+            LazyColumn(
+                userScrollEnabled = true,
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background, RoundedCornerShape(20))
-                    .wrapContentSize(),
+                    .height(360.dp)
+                    .width(340.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                IconButton(
-                    onClick = { onDismiss() },
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(top = 8.dp, end = 16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = stringResource(R.string.close)
-                    )
+                item {
+                    Row (
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp, start = 16.dp, end = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Spacer(modifier = Modifier.height(24.dp))
+                        IconButton(
+                            onClick = { onDismiss() },
+                            modifier = Modifier
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = stringResource(R.string.close)
+                            )
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                item {
+                    Text(
+                        text = stringResource(R.string.change_photo),
+                        style = MaterialTheme.typography.titleLarge
+                    )
 
-                Text(
-                    text = stringResource(R.string.change_photo),
-                    style = MaterialTheme.typography.titleLarge)
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                Spacer(modifier = Modifier.height(24.dp))
-
-                AsyncImage(
-                    model = imageUri,
-                    contentDescription = stringResource(R.string.old_photo),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(20))
-                        .background(Color.Transparent, RoundedCornerShape(20))
-                        .size(120.dp)
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-                Row(
-                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    OutlinedButton(
-                        border = BorderStroke(
-                            2.dp,
-                            MaterialTheme.colorScheme.primary
-                        ),
-                        onClick = { launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) }
+                    AsyncImage(
+                        model = imageUri,
+                        contentDescription = stringResource(R.string.old_photo),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20))
+                            .background(Color.Transparent, RoundedCornerShape(20))
+                            .size(120.dp)
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Row(
+                        modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = stringResource(R.string.choose_new_photo),
-                            style = MaterialTheme.typography.bodySmall)
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val parseImage = uriToFile(imageUri!!, context)
-                                authViewModel.updatePhoto(
-                                    photo = parseImage.toUri(),
-                                    onUpdateComplete = {
-                                        userPreferenceViewModel.savePhoto(parseImage.toUri().toString())
-                                        Toast.makeText(
-                                            context,
-                                            R.string.change_photo_successfully, Toast.LENGTH_SHORT
-                                        ).show()
-                                        onDismiss()
-                                    },
-                                    onUpdateError = {
-                                        Toast.makeText(context, it.toString(), Toast.LENGTH_SHORT)
-                                            .show()
-                                        onDismiss()
-                                    }
+                        OutlinedButton(
+                            border = BorderStroke(
+                                2.dp,
+                                MaterialTheme.colorScheme.primary
+                            ),
+                            onClick = {
+                                launcherGallery.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
                                 )
                             }
-                        },
-                        enabled = isEnabled
-                    ) {
-                        Text(
-                            text = stringResource(R.string.change_photo),
-                            style = MaterialTheme.typography.bodySmall)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.choose_new_photo),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val parseImage = uriToFile(imageUri!!, context)
+                                    authViewModel.updatePhoto(
+                                        photo = parseImage.toUri(),
+                                        onUpdateComplete = {
+                                            userPreferenceViewModel.savePhoto(
+                                                parseImage.toUri().toString()
+                                            )
+                                            Toast.makeText(
+                                                context,
+                                                R.string.change_photo_successfully,
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            onDismiss()
+                                        },
+                                        onUpdateError = {
+                                            Toast.makeText(
+                                                context,
+                                                it.toString(),
+                                                Toast.LENGTH_SHORT
+                                            )
+                                                .show()
+                                            onDismiss()
+                                        }
+                                    )
+                                }
+                            },
+                            enabled = isEnabled
+                        ) {
+                            Text(
+                                text = stringResource(R.string.change_photo),
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.dietinapp.R
@@ -49,6 +50,7 @@ import com.dietinapp.database.datastore.UserPreferenceViewModel
 import com.dietinapp.retrofit.data.viewmodel.HistoryPagingViewModel
 import com.dietinapp.retrofit.data.viewmodel.HistoryPagingViewModelFactory
 import com.dietinapp.ui.component.ArticleCard
+import com.dietinapp.ui.component.LoadingScreen
 import com.dietinapp.ui.component.ScanCard
 import com.dietinapp.utils.capitalizeFirstLetter
 
@@ -174,53 +176,66 @@ fun HomeScreen(
                 modifier = Modifier
                     .wrapContentSize()
             ) {
-                if (historiesPagingItems.itemCount == 0) {
-                    item {
-                        Row(
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp)
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.onboarding_first),
-                                contentDescription = stringResource(R.string.never_scan),
-                                modifier = Modifier
-                                    .size(80.dp)
-                                    .align(Alignment.CenterVertically)
-                            )
-
-                            Spacer(modifier = Modifier.widthIn(min = 16.dp))
-
-                            Text(
-                                stringResource(R.string.never_scan_message),
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
-                        }
-                    }
-                } else {
-                    items(historiesPagingItems.itemCount.coerceAtMost(5)) { index ->
-                        ScanCard(
-                            modifier = Modifier.padding(vertical = 16.dp),
-                            foodName = historiesPagingItems[index]!!.foodName,
-                            foodPhoto = historiesPagingItems[index]!!.foodPhoto.toUri(),
-                            foodStatus = if (!historiesPagingItems[index]!!.lectineStatus) stringResource(
-                                R.string.free_lectine
-                            )
-                            else stringResource(R.string.contain_lectine),
-                            color = if (!historiesPagingItems[index]!!.lectineStatus) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.tertiary,
-                            onClick = {
-                                navigateToDetail(historiesPagingItems[index]!!.id)
-                            }
+                items(historiesPagingItems.itemCount.coerceAtMost(5)) { index ->
+                    ScanCard(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        foodName = historiesPagingItems[index]!!.foodName,
+                        foodPhoto = historiesPagingItems[index]!!.foodPhoto.toUri(),
+                        foodStatus = if (!historiesPagingItems[index]!!.lectineStatus) stringResource(
+                            R.string.free_lectine
                         )
+                        else stringResource(R.string.contain_lectine),
+                        color = if (!historiesPagingItems[index]!!.lectineStatus) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.tertiary,
+                        onClick = {
+                            navigateToDetail(historiesPagingItems[index]!!.id)
+                        }
+                    )
+                    Spacer(modifier = Modifier.heightIn(min = 8.dp))
+                }
+
+                historiesPagingItems.apply {
+                    when {
+                        loadState.append is LoadState.Loading -> {
+                            item {
+                                LoadingScreen()
+                                Spacer(modifier = Modifier.heightIn(min = 8.dp))
+                            }
+                        }
+
+                        this.itemCount == 0 -> {
+                            item {
+                                Row(
+                                    horizontalArrangement = Arrangement.Start,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
+                                ) {
+                                    Image(
+                                        painter = painterResource(R.drawable.onboarding_first),
+                                        contentDescription = stringResource(R.string.never_scan),
+                                        modifier = Modifier
+                                            .size(80.dp)
+                                            .align(Alignment.CenterVertically)
+                                    )
+
+                                    Spacer(modifier = Modifier.widthIn(min = 16.dp))
+
+                                    Text(
+                                        stringResource(R.string.never_scan_message),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.align(Alignment.CenterVertically)
+                                    )
+
+                                    Spacer(modifier = Modifier.heightIn(min = 8.dp))
+                                }
+                            }
+                        }
                     }
                 }
             }
-            Spacer(modifier = Modifier.heightIn(min = 8.dp))
         }
 
         stickyHeader {

@@ -202,12 +202,12 @@ fun DietinApp(
                         navController.navigate(DietinScreen.History.route)
                     },
                     navigateToDetail = {
-                        val route = DietinScreen.Detail.createRoute(it)
-                        navController.navigate(route)
+                        val detailRoute = DietinScreen.Detail.createRoute(it)
+                        navController.navigate(detailRoute)
                     },
-                    navigateToArticle = {
-                        val route = DietinScreen.Article.createRoute(it)
-                        navController.navigate(route)
+                    navigateToArticle = { article ->
+                        val articleRoute = DietinScreen.Article.createRoute(article)
+                        navController.navigate(articleRoute)
                     }
                 )
                 ErrorDialog(
