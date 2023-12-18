@@ -101,4 +101,7 @@
     <string name="change_password_confirmation">Apakah Anda yakin ingin mengubah password?</string>
     <string name="app_slogan">Your Lectin Diet Assistant</string>
     <string name="filter_today">Hari ini</string>
+    <string name="cannot_refresh_warning">Tidak dapat refresh, ada masalah:(</string>
+    <string name="lighting_instruction">Pastikan pencahayaan cukup</string>
+    <string name="network_warning">Pastikan kamu terkoneksi dengan internet agar hasil scan tersimpan dalam riwayat. Jika tidak maka hasil scanmu tidak akan tersimpan:(</string>
 </resources>

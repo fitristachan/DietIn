@@ -189,7 +189,8 @@ fun PhotoDialogCard(
                         ) {
                             Text(
                                 text = stringResource(R.string.change_photo),
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.secondaryContainer
                             )
                         }
                     }
