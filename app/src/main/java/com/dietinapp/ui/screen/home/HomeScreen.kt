@@ -196,13 +196,6 @@ fun HomeScreen(
 
                 historiesPagingItems.apply {
                     when {
-                        loadState.append is LoadState.Loading -> {
-                            item {
-                                LoadingScreen()
-                                Spacer(modifier = Modifier.heightIn(min = 8.dp))
-                            }
-                        }
-
                         this.itemCount == 0 -> {
                             item {
                                 Row(

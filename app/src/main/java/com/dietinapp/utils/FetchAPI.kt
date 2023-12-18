@@ -81,8 +81,8 @@ fun processAndFetchCamera(
             val ingredients: List<IngredientsItem> = recipes[result].ingredients
 
             saveToGallery(context, imageUri) { file ->
-                val foodPhoto = file!!.reduceFileImage()
-                imageFileInGallery.value = file.toUri().toString()
+                val foodPhoto = uriToFile(imageUri, context).reduceFileImage()
+                imageFileInGallery.value = file!!.toUri().toString()
 
                 historyViewModel.addHistory(
                     foodPhoto = foodPhoto,

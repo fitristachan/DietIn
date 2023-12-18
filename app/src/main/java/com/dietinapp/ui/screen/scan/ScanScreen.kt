@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import com.dietinapp.R
 import com.dietinapp.retrofit.data.viewmodel.HistoryViewModel
 import com.dietinapp.ui.component.CameraPreview
+import com.dietinapp.ui.component.ErrorDialog
 import com.dietinapp.ui.component.LoadingScreen
 import com.dietinapp.ui.component.dashedBorder
 import com.dietinapp.utils.Permission
@@ -96,6 +97,8 @@ fun ScanScreen(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     var isLoading by remember { mutableStateOf(false) }
+
+    var showDialog by remember { mutableStateOf(true) }
 
     val launcherGallery = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -185,6 +188,19 @@ fun ScanScreen(
                         tween(5000),
                         repeatMode = RepeatMode.Reverse
                     ), label = ""
+                )
+
+                Text(
+                    text = stringResource(id = R.string.lighting_instruction),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(flashAnimation),
+                    modifier = Modifier.scale(beatAnimation)
+                )
+
+                Spacer(
+                    modifier = Modifier
+                        .height(16.dp)
+                        .fillMaxWidth()
                 )
 
                 Text(
@@ -307,12 +323,7 @@ fun ScanScreen(
                         }
                     }
                 ) {
-                    // No content
                 }
-            }
-
-            if (isLoading) {
-                LoadingScreen()
             }
 
             LaunchedEffect(previewUseCase) {
@@ -332,6 +343,20 @@ fun ScanScreen(
                 }
             }
         }
+        if (isLoading) {
+            Box(modifier = Modifier.background(MaterialTheme.colorScheme.onBackground)){
+                LoadingScreen()
+            }
+
+        }
+        ErrorDialog(
+            showDialog = showDialog,
+            errorMsg = stringResource(R.string.network_warning),
+            onDismiss =
+            {
+                showDialog = false
+            }
+        )
     }
 }
 

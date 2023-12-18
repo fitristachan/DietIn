@@ -294,7 +294,7 @@ fun HistoryScreen(
                             isContainPressed = false
                             isAllPressed = false
                             queryStatus = false
-                        } else {
+                        } else if (isFreePressed) {
                             isFreePressed = false
                             queryStatus = null
                         }
@@ -328,7 +328,7 @@ fun HistoryScreen(
                             isFreePressed = false
                             isAllPressed = false
                             queryStatus = true
-                        } else {
+                        } else if (isContainPressed) {
                             isContainPressed = false
                             queryStatus = null
                         }
@@ -393,11 +393,10 @@ fun HistoryScreen(
                     }
 
                     loadState.refresh is LoadState.Error -> {
-                        val error = historiesPagingItems.loadState.refresh as LoadState.Error
                         item {
                             ErrorMessage(
                                 modifier = Modifier.wrapContentSize(),
-                                message = error.error.localizedMessage!!,
+                                message = stringResource(R.string.cannot_refresh_warning),
                                 onClickRetry = { retry() })
                         }
                     }
@@ -438,7 +437,7 @@ fun HistoryScreen(
                         item {
                             ErrorMessage(
                                 modifier = Modifier,
-                                message = error.error.localizedMessage!!,
+                                message = stringResource(R.string.cannot_refresh_warning),
                                 onClickRetry = { retry() })
                         }
                     }
