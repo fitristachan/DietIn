@@ -1,10 +1,18 @@
-# Project Title
+# DietIn
 
-This project utilizes Kotlin and Jetpack Compose along with integration of a TensorFlow Lite (TFLite) model for [purpose]. The model serves the purpose of [explain the functionality or purpose of the model briefly].
+This project utilizes Kotlin and Jetpack Compose along with integration of a TensorFlow Lite (TFLite) model for making an app that will help user to know if they food containing lectine or not. With knowing that, we hope it will help user with their diet. User can scan images directly from camera or scan images from gallery. 
 
 ## Overview
 
-Provide a brief overview or introduction to the project, including its goals, functionalities, and any relevant information about the app.
+We hope it will help users that need to avoid lectine. To help users, we provide some features like below:
+The app have some features such as:
+1. Authentication using Firebase: custom and OAuth using Google
+2. Scan images from gamera or gallery with TensorFlow model
+3. Show the detail result, static if it's opened through scan and online from our API if it's from history
+4. Storing and retrieving scan histories, including feature to searching and filtering them by date and lectin/non-lectin markers
+5. Show some articles using static article
+6. Change username, password, and photo of users
+
 
 ## Installation
 
@@ -33,7 +41,7 @@ To utilize the TensorFlow Lite model within this project, follow these steps:
 
     Open the relevant Kotlin file [ProcessImage.kt](src%2Fmain%2Fjava%2Fcom%2Fdietinapp%2Fmodel%2FProcessImage.kt) where the TensorFlow Lite model is loaded and used. Ensure that the path to the model file matches the location where you placed the downloaded model in the assets folder.
 
-   3. **Use the model functionality in the app:**
+4. **Use the model functionality in the app:**
    Implement the necessary logic within your app to utilize the loaded TensorFlow Lite model for the desired functionality.
 
 
