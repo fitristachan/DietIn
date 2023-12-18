@@ -1,6 +1,6 @@
 # DietIn
 
-This project utilizes Kotlin and Jetpack Compose along with integration of a TensorFlow Lite (TFLite) model for making an app that will help user to know if they food containing lectine or not. With knowing that, we hope it will help user with their diet. User can scan images directly from camera or scan images from gallery. 
+This project utilizes Kotlin and Jetpack Compose along with integration of a TensorFlow Lite (TFLite) model for making an app that will help user to know if they food containing lectine or not. We use Firebase Authentication and GCP Architecture too for the API. With knowing that, we hope it will help user with their diet. User can scan images directly from camera or scan images from gallery. 
 
 ## Overview
 
@@ -10,8 +10,9 @@ The app have some features such as:
 2. Scan images from gamera or gallery with TensorFlow model
 3. Show the detail result, static if it's opened through scan and online from our API if it's from history
 4. Storing and retrieving scan histories, including feature to searching and filtering them by date and lectin/non-lectin markers
-5. Show some articles using static article
-6. Change username, password, and photo of users
+5. Delete history
+6. Show some articles using static article
+7. Change username, password, and photo of users
 
 
 ## Installation
@@ -58,4 +59,6 @@ The member who created this project are:
 
 
 ## Contact
-For any inquiries or feedback, feel free to contact me at [fitristarius@gmail.com].
+For any inquiries or feedback, feel free to contact me at 
+Email: fitristarius@gmail.com
+Linkedin: [Fitri Sagita](https://id.linkedin.com/in/fitri-sagita-4a530a210)
