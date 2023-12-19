@@ -49,10 +49,12 @@ To utilize the TensorFlow Lite model within this project, follow these steps:
 ## Acknowledgements
 
 The mobile development of this project who created the front-end is:
-A128BSX2056 – Fitri Sagita – Politeknik Negeri Jakarta - Mobile Development
+| Student ID      | Name          | University               | Course                 |
+|-----------------|---------------|--------------------------|------------------------|
+| A128BSX2056     | Fitri Sagita  | Politeknik Negeri Jakarta| Mobile Development     |
 
 
 ## Contact
 For any inquiries or feedback, feel free to contact me at 
-Email: fitristarius@gmail.com
-Linkedin: [Fitri Sagita](https://id.linkedin.com/in/fitri-sagita-4a530a210)
+1. Email: fitristarius@gmail.com
+2. Linkedin: [Fitri Sagita](https://id.linkedin.com/in/fitri-sagita-4a530a210)
