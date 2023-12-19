@@ -48,14 +48,8 @@ To utilize the TensorFlow Lite model within this project, follow these steps:
 
 ## Acknowledgements
 
-This project is made by **CH2-PS549 - DietIn Team** for Bangkit Product Capstone
-The member who created this project are:
-1. M128BSY1615 – Muhammad Riziq Ramadhan Al Arafah – Politeknik Negeri Jakarta - Machine Learning
-2. M011BSY1869 – Fadlan Ahya Imani – Universitas Padjadjaran - Machine Learning
-3. M128BSX1189 – Shierra Intan Anggari – Politeknik Negeri Jakarta- Machine Learning
-4. C012BSY3605 – Muhammad Nurul Afif Maliki – Cloud Computing - Telkom University
-5. C676BSX3192 – Shoraahatan Salsabila – Cloud Computing - Universitas Global Jakarta
-6. A128BSX2056 – Fitri Sagita – Politeknik Negeri Jakarta - Mobile Development
+The mobile development of this project who created the front-end is:
+A128BSX2056 – Fitri Sagita – Politeknik Negeri Jakarta - Mobile Development
 
 
 ## Contact
