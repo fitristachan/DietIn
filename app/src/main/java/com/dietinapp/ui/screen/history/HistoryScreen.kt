@@ -272,29 +272,22 @@ fun HistoryScreen(
                     )
                 }
             }
-            when (queryStatus) {
-                false -> {
-                    isFreePressed = true
-                }
 
-                true -> {
-                    isContainPressed = true
-                }
-
-                null -> {
-                    isFreePressed = false
-                    isContainPressed = false
-                }
+            if (isFreePressed){
+                isContainPressed = false
+            } else if (isContainPressed){
+                isFreePressed = false
             }
+
             item {
                 Button(
                     onClick = {
                         if (!isFreePressed) {
+                            queryStatus = false
                             isFreePressed = true
                             isContainPressed = false
                             isAllPressed = false
-                            queryStatus = false
-                        } else if (isFreePressed) {
+                        } else if (isFreePressed && !isContainPressed) {
                             isFreePressed = false
                             queryStatus = null
                         }
@@ -324,11 +317,11 @@ fun HistoryScreen(
                 Button(
                     onClick = {
                         if (!isContainPressed) {
+                            queryStatus = true
                             isContainPressed = true
                             isFreePressed = false
                             isAllPressed = false
-                            queryStatus = true
-                        } else if (isContainPressed) {
+                        } else if (isContainPressed && !isFreePressed) {
                             isContainPressed = false
                             queryStatus = null
                         }
