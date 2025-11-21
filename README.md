@@ -2,6 +2,8 @@
 
 This project utilizes Kotlin and Jetpack Compose along with integration of a TensorFlow Lite (TFLite) model for making an app that will help user to know if they food containing lectine or not. We use Firebase Authentication and GCP Architecture too for the API. With knowing that, we hope it will help user with their diet. User can scan images directly from camera or scan images from gallery. 
 
+**Demo Video and .app link**: https://drive.google.com/drive/folders/1XUF1yNhcsPEIHMlnfuPMPSrDt_fzRzTx
+
 ## Overview
 
 We hope it will help users that need to avoid lectine. To help users, we provide some features like below:
